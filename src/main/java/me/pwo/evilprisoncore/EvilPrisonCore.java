@@ -26,7 +26,6 @@ import java.util.List;
 public final class EvilPrisonCore extends ExtendedJavaPlugin {
 
     public static EvilPrisonCore instance;
-    private static boolean DEBUG_MODE = false;
     private LinkedHashMap<String, EvilPrisonModules> loadedModules;
     private Database pluginDatabase;
     private FileUtils fileUtils;
@@ -151,12 +150,6 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
             (new EvilPrisonPAPIPlaceholders(this)).register();
     }
 
-    public void debug(String paramString) {
-        if (!DEBUG_MODE)
-            return;
-        getLogger().info(Text.colorize(paramString));
-    }
-
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null)
             return false;
@@ -167,8 +160,8 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         return (this.economy != null);
     }
 
-    public boolean isModuleEnabled(String paramString) {
-        return this.loadedModules.containsKey(paramString.toLowerCase());
+    public boolean isModuleEnabled(String moduleName) {
+        return this.loadedModules.containsKey(moduleName.toLowerCase());
     }
 
     public boolean isPickaxeSupported(Material paramMaterial) {

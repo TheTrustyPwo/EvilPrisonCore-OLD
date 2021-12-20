@@ -61,9 +61,7 @@ public class GemsManager {
             this.updating = true;
             Players.all().forEach((player) -> this.savePlayerData(player, false, false));
             this.top10Gems = new LinkedHashMap<>();
-            this.gems.getPlugin().debug("Starting updating GemsTop");
             this.top10Gems = (LinkedHashMap<UUID, Long>) this.gems.getPlugin().getPluginDatabase().getTop10Gems();
-            this.gems.getPlugin().debug("GemsTop updated!");
             this.updating = false;
         }, 30L, TimeUnit.SECONDS, 10, TimeUnit.MINUTES);
     }

@@ -175,7 +175,6 @@ public class Enchants implements EvilPrisonModules {
                         return;
                     }
                     int i = this.enchantsManager.getInventorySlot(paramCommandContext.sender(), itemStack);
-                    this.plugin.debug("Pickaxe slot is: " + i);
                     (new DisenchantGUI(paramCommandContext.sender(), itemStack, i)).open();
                 }).registerAndBind(this.plugin, "disenchant", "dise", "de", "disenchantmenu", "dismenu");
         Commands.create()
@@ -187,7 +186,6 @@ public class Enchants implements EvilPrisonModules {
                         return;
                     }
                     int i = this.enchantsManager.getInventorySlot(paramCommandContext.sender(), itemStack);
-                    this.plugin.debug("Pickaxe slot is: " + i);
                     (new EnchantGUI(paramCommandContext.sender(), itemStack, i)).open();
                 }).registerAndBind(this.plugin, "enchantmenu", "enchmenu");
     }
