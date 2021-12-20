@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("deprecation")
 public class GemsManager {
     private static final String tokenItemNBTTagIdentifier = "EvilPrison-Gems-Item-Value";
     private final Gems gems;
@@ -166,7 +167,7 @@ public class GemsManager {
             PlayerUtils.sendMessage(sender, "&c&lLeaderboard is currently updating...");
             return;
         }
-        for (String str : this.gemsTopFormat) {
+        for (String str : gemsTopFormat) {
             if (str.startsWith("{FOR_EACH_PLAYER}")) {
                 str = str.replace("{FOR_EACH_PLAYER} ", "");
                 for (byte position = 0; position < 10; position++) {

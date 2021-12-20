@@ -109,7 +109,7 @@ public class Gems implements EvilPrisonModules {
                 .handler(paramCommandContext -> {
                     if (paramCommandContext.args().size() == 0)
                         this.gemsManager.sendGemsTop(paramCommandContext.sender());
-                }).registerAndBind(this.plugin, "gemstop", "tokentop");
+                }).registerAndBind(this.plugin, "gems", "tokentop");
     }
 
     public String getName() {
