@@ -178,11 +178,11 @@ public abstract class EvilPrisonEnchantment implements Refundable {
         return (this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getPickaxeLevel(paramItemStack).getLevel() >= this.requiredPickaxeLevel);
     }
 
-    public abstract void onEquip(Player paramPlayer, ItemStack paramItemStack, int paramInt);
+    public abstract void onEquip(Player player, ItemStack itemStack, int level);
 
-    public abstract void onUnequip(Player paramPlayer, ItemStack paramItemStack, int paramInt);
+    public abstract void onUnequip(Player player, ItemStack itemStack, int level);
 
-    public abstract void onBlockBreak(BlockBreakEvent paramBlockBreakEvent, int paramInt);
+    public abstract void onBlockBreak(BlockBreakEvent e, int level, double random);
 
     public abstract void reload();
 }

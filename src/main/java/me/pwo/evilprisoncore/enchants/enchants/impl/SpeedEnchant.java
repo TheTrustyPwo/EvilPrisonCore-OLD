@@ -13,19 +13,16 @@ public class SpeedEnchant extends EvilPrisonEnchantment {
         super(enchants, 5);
     }
 
-    public void onEquip(Player paramPlayer, ItemStack paramItemStack, int paramInt) {
-        if (paramInt == 0) {
-            onUnequip(paramPlayer, paramItemStack, paramInt);
-            return;
-        }
-        paramPlayer.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 2147483647, paramInt - 1, true, true), true);
+    public void onEquip(Player player, ItemStack itemStack, int level) {}
+
+    public void onUnequip(Player player, ItemStack itemStack, int level) {
+        player.removePotionEffect(PotionEffectType.SPEED);
     }
 
-    public void onUnequip(Player paramPlayer, ItemStack paramItemStack, int paramInt) {
-        paramPlayer.removePotionEffect(PotionEffectType.SPEED);
+    public void onBlockBreak(BlockBreakEvent e, int level, double random) {
+        if (!e.getPlayer().hasPotionEffect(PotionEffectType.SPEED) && level > 0)
+            e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 15, level - 1, true, true), true);
     }
-
-    public void onBlockBreak(BlockBreakEvent paramBlockBreakEvent, int paramInt) {}
 
     public void reload() {}
 }

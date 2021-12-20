@@ -8,10 +8,12 @@ import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.utils.PlayerUtils;
 import me.pwo.evilprisoncore.utils.SkullUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -115,4 +117,5 @@ public class EnchantGUI extends Gui {
         if (PICKAXE_ITEM_ENABLED)
             PICKAXE_ITEM_SLOT = Enchants.getInstance().getConfig().getInt("enchant_menu.pickaxe_slot");
     }
+
 }

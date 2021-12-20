@@ -14,6 +14,7 @@ import me.pwo.evilprisoncore.enchants.manager.EnchantsManager;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -88,25 +89,25 @@ public class Enchants implements EvilPrisonModules {
 
     private void registerEvents() {
         Events.subscribe(PlayerInteractEvent.class)
-                .filter(paramPlayerInteractEvent -> (paramPlayerInteractEvent.getItem() != null && getPlugin().isPickaxeSupported(paramPlayerInteractEvent.getItem().getType())))
-                .filter(paramPlayerInteractEvent -> (paramPlayerInteractEvent.getAction() == Action.RIGHT_CLICK_AIR || (paramPlayerInteractEvent.getAction() == Action.RIGHT_CLICK_BLOCK && this.enchantsManager.isOpenEnchantMenuOnRightClickBlock())))
-                .handler(paramPlayerInteractEvent -> {
-                    paramPlayerInteractEvent.setCancelled(true);
-                    ItemStack itemStack = paramPlayerInteractEvent.getItem();
-                    int i = this.enchantsManager.getInventorySlot(paramPlayerInteractEvent.getPlayer(), itemStack);
-                    (new EnchantGUI(paramPlayerInteractEvent.getPlayer(), itemStack, i)).open();
+                .filter(e -> (e.getItem().getType() == Material.DIAMOND_PICKAXE))
+                .filter(e -> (e.getAction() == Action.RIGHT_CLICK_AIR || (e.getAction() == Action.RIGHT_CLICK_BLOCK)))
+                .handler(e -> {
+                    e.setCancelled(true);
+                    ItemStack itemStack = e.getItem();
+                    int i = this.enchantsManager.getInventorySlot(e.getPlayer(), itemStack);
+                    (new EnchantGUI(e.getPlayer(), itemStack, i)).open();
                 }).bindWith(this.plugin);
         Events.subscribe(BlockBreakEvent.class, EventPriority.HIGHEST)
                 .filter(EventFilters.ignoreCancelled())
                 .filter(paramBlockBreakEvent -> (paramBlockBreakEvent.getPlayer().getGameMode() == GameMode.SURVIVAL && !paramBlockBreakEvent.isCancelled() && paramBlockBreakEvent.getPlayer().getItemInHand() != null && getPlugin().isPickaxeSupported(paramBlockBreakEvent.getPlayer().getItemInHand().getType())))
                 .filter(paramBlockBreakEvent -> (this.enchantsManager.isAllowEnchantsOutside() || WorldGuardWrapper.getInstance().getRegions(paramBlockBreakEvent.getBlock().getLocation()).stream().anyMatch((region) -> region.getId().toLowerCase().startsWith("mine-"))))
                 .handler(paramBlockBreakEvent -> {
-                    this.enchantsManager.addBlocksBrokenToItem(paramBlockBreakEvent.getPlayer(), 1);
+                    this.enchantsManager.addBlocksBrokenToItem(paramBlockBreakEvent.getPlayer().getItemInHand(), 1);
                     this.enchantsManager.handleBlockBreak(paramBlockBreakEvent, paramBlockBreakEvent.getPlayer().getItemInHand());
                 }).bindWith(this.plugin);
         Events.subscribe(BlockBreakEvent.class, EventPriority.LOWEST)
                 .filter(paramBlockBreakEvent -> (paramBlockBreakEvent.getPlayer().getGameMode() == GameMode.SURVIVAL && !paramBlockBreakEvent.isCancelled() && paramBlockBreakEvent.getPlayer().getItemInHand() != null && getPlugin().isPickaxeSupported(paramBlockBreakEvent.getPlayer().getItemInHand().getType())))
-                .filter(paramBlockBreakEvent -> WorldGuardWrapper.getInstance().getRegions(paramBlockBreakEvent.getBlock().getLocation()).stream().noneMatch((region) -> region.getId().toLowerCase().startsWith("mine-")))
+                .filter(e -> WorldGuardWrapper.getInstance().getRegions(e.getBlock().getLocation()).stream().noneMatch((region) -> region.getId().toLowerCase().startsWith("mine-")))
                 .filter(paramBlockBreakEvent -> this.enchantsManager.hasEnchants(paramBlockBreakEvent.getPlayer().getItemInHand()))
                 .handler(paramBlockBreakEvent -> paramBlockBreakEvent.setCancelled(true)).bindWith(this.plugin);
         Events.subscribe(PlayerItemHeldEvent.class, EventPriority.HIGHEST)

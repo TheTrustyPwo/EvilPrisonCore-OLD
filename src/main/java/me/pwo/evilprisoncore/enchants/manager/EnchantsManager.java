@@ -25,11 +25,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("deprecation")
 public class EnchantsManager {
+    private static final String BLOCK_BROKEN_NBT_IDENTIFIER = "EvilPrison-Pickaxe-BlocksBroken";
+    private static final String ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX = "EvilPrison-Pickaxe-Enchant-";
+    private static final String PICKAXE_ID_NBT_IDENTIFIER = "EvilPrison-Pickaxe-ID";
     private final Enchants enchants;
     private List<String> ENCHANT_GUI_ITEM_LORE;
     private List<String> DISENCHANT_GUI_ITEM_LORE;
@@ -42,10 +45,6 @@ public class EnchantsManager {
     private Material firstJoinPickaxeMaterial;
     private List<String> firstJoinPickaxeEnchants;
     private String firstJoinPickaxeName;
-
-    public boolean isOpenEnchantMenuOnRightClickBlock() {
-        return this.openEnchantMenuOnRightClickBlock;
-    }
 
     public boolean isAllowEnchantsOutside() {
         return this.allowEnchantsOutside;
@@ -68,95 +67,65 @@ public class EnchantsManager {
     public HashMap<EvilPrisonEnchantment, Integer> getPlayerEnchants(ItemStack itemStack) {
         HashMap<EvilPrisonEnchantment, Integer> hashMap = new HashMap<>();
         for (EvilPrisonEnchantment enchantment : EvilPrisonEnchantment.all()) {
-            int i = getEnchantLevel(itemStack, enchantment.getId());
-            if (i == 0)
-                continue;
-            hashMap.put(enchantment, i);
+            int level = getEnchantLevel(itemStack, enchantment.getId());
+            if (level == 0) continue;
+            hashMap.put(enchantment, level);
         }
         return hashMap;
     }
 
     public ItemStack findPickaxe(Player player) {
-        for (ItemStack itemStack : player.getInventory()) {
-            if (itemStack == null)
-                continue;
-            if (this.enchants.getPlugin().isPickaxeSupported(itemStack.getType()))
-                return itemStack;
-        }
+        for (ItemStack itemStack : player.getInventory())
+            if (itemStack.getType() == Material.DIAMOND_PICKAXE) return itemStack;
         return null;
     }
 
     public void updatePickaxe(ItemStack itemStack) {
-        if (itemStack == null || !this.enchants.getPlugin().isPickaxeSupported(itemStack.getType()))
-            return;
         applyLoreToPickaxe(itemStack);
     }
 
     private void applyLoreToPickaxe(ItemStack itemStack) {
         ItemMeta itemMeta = itemStack.getItemMeta();
-        ArrayList<String> arrayList = new ArrayList();
-        boolean bool = this.enchants.getPlugin().isModuleEnabled("Pickaxe Levels");
-        PickaxeLevel pickaxeLevel1 = null;
-        PickaxeLevel pickaxeLevel2 = null;
-        if (bool) {
-            pickaxeLevel1 = this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getPickaxeLevel(itemStack);
-            pickaxeLevel2 = this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getNextPickaxeLevel(pickaxeLevel1);
-        }
+        ArrayList<String> lore = new ArrayList<>();
+        PickaxeLevel currentLevel = this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getPickaxeLevel(itemStack);
+        PickaxeLevel nextLevel = this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getNextPickaxeLevel(currentLevel);
         Pattern pattern = Pattern.compile("%Enchant-\\d+%");
-        for (String str : this.PICKAXE_LORE) {
-            str = str.replace("%Blocks%", String.valueOf(getBlocksBroken(itemStack)));
-            if (bool) {
-                str = str.replace("%Blocks_Required%", (pickaxeLevel2 == null) ? "∞" : String.valueOf(pickaxeLevel2.getBlocksRequired()));
-                        str = str.replace("%PickaxeLevel%", (pickaxeLevel1 == null) ? "0" : String.valueOf(pickaxeLevel1.getLevel()));
-                str = str.replace("%PickaxeProgress%", this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getProgressBar(itemStack));
-            }
-            Matcher matcher = pattern.matcher(str);
+        for (String string : this.PICKAXE_LORE) {
+            string = string
+                    .replaceAll("%Blocks%", String.valueOf(getBlocksBroken(itemStack)))
+                    .replaceAll("%Blocks_Required%", (nextLevel == null) ? "∞" : String.valueOf(nextLevel.getBlocksRequired()))
+                    .replaceAll("%PickaxeLevel%", (currentLevel == null) ? "0" : String.valueOf(currentLevel.getLevel()))
+                    .replaceAll("%PickaxeProgress%", this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getProgressBar(itemStack));
+            Matcher matcher = pattern.matcher(string);
             if (matcher.find()) {
-                int i = Integer.parseInt(matcher.group().replaceAll("\\D", ""));
-                EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(i);
+                int id = Integer.parseInt(matcher.group().replaceAll("\\D", ""));
+                EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
                 if (enchantment != null) {
-                    int j = getEnchantLevel(itemStack, i);
-                    if (j > 0) {
-                        str = str.replace(matcher.group(), enchantment.getName() + " " + j);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
+                    int level = getEnchantLevel(itemStack, id);
+                    if (level > 0) string = string.replace(matcher.group(), enchantment.getName() + " " + level);
+                    else continue;
+                } else continue;
             }
-            arrayList.add(Text.colorize(str));
+            lore.add(Text.colorize(string));
         }
-        itemMeta.setLore(arrayList);
+        itemMeta.setLore(lore);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);
     }
 
     public long getBlocksBroken(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType() == Material.AIR)
-            return 0L;
-        NBTItem nBTItem = new NBTItem(itemStack);
-        if (!nBTItem.hasKey("blocks-broken"))
-            return 0L;
-        return nBTItem.getLong("blocks-broken");
+        if (itemStack == null || itemStack.getType() == Material.AIR) return 0L;
+        NBTItem nbtItem = new NBTItem(itemStack);
+        if (!nbtItem.hasKey(BLOCK_BROKEN_NBT_IDENTIFIER)) return 0L;
+        return nbtItem.getLong(BLOCK_BROKEN_NBT_IDENTIFIER);
     }
 
-    public synchronized void addBlocksBrokenToItem(Player player, int amount) {
-        if (amount == 0)
-            return;
-        NBTItem nBTItem = new NBTItem(player.getItemInHand());
-        try {
-            int i = nBTItem.getInteger("blocks-broken");
-            if (i > 0) {
-                amount += i;
-                nBTItem.removeKey("blocks-broken");
-            }
-        } catch (Exception ignored) {}
-        if (!nBTItem.hasKey("blocks-broken"))
-            nBTItem.setLong("blocks-broken", 0L);
-        nBTItem.setLong("blocks-broken", nBTItem.getLong("blocks-broken") + amount);
-        player.setItemInHand(nBTItem.getItem());
-        applyLoreToPickaxe(player.getItemInHand());
+    public synchronized void addBlocksBrokenToItem(ItemStack itemStack, int amount) {
+        if (amount == 0) return;
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setLong(BLOCK_BROKEN_NBT_IDENTIFIER,
+                nbtItem.hasKey(BLOCK_BROKEN_NBT_IDENTIFIER) ? nbtItem.getLong(BLOCK_BROKEN_NBT_IDENTIFIER) + amount : 0L);
+        applyLoreToPickaxe(itemStack);
     }
 
     public boolean hasEnchant(Player paramPlayer, int paramInt) {
@@ -166,146 +135,125 @@ public class EnchantsManager {
         return (getEnchantLevel(itemStack, paramInt) != 0);
     }
 
-    public synchronized int getEnchantLevel(ItemStack paramItemStack, int paramInt) {
-        if (paramItemStack == null || paramItemStack.getType() == Material.AIR)
-            return 0;
-        NBTItem nBTItem = new NBTItem(paramItemStack);
-        if (!nBTItem.hasKey("ultra-prison-ench-" + paramInt))
-            return 0;
-        return nBTItem.getInteger("ultra-prison-ench-" + paramInt);
+    public synchronized int getEnchantLevel(ItemStack itemStack, int id) {
+        if (itemStack == null || itemStack.getType() == Material.AIR) return 0;
+        NBTItem nBTItem = new NBTItem(itemStack);
+        return nBTItem.hasKey(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + id) ? nBTItem.getInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + id) : 0;
     }
 
     public void handleBlockBreak(BlockBreakEvent e, ItemStack itemStack) {
         HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(itemStack);
         for (EvilPrisonEnchantment enchantment : hashMap.keySet())
-            enchantment.onBlockBreak(e, hashMap.get(enchantment));
+            enchantment.onBlockBreak(e, hashMap.get(enchantment), ThreadLocalRandom.current().nextDouble(100.0D));
     }
 
-    public void handlePickaxeEquip(Player paramPlayer, ItemStack paramItemStack) {
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(paramItemStack);
+    public void handlePickaxeEquip(Player player, ItemStack itemStack) {
+        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(itemStack);
         for (EvilPrisonEnchantment enchantment : hashMap.keySet())
-            enchantment.onEquip(paramPlayer, paramItemStack, hashMap.get(enchantment));
+            enchantment.onEquip(player, itemStack, hashMap.get(enchantment));
     }
 
-    public void handlePickaxeUnequip(Player paramPlayer, ItemStack paramItemStack) {
-        paramPlayer.getActivePotionEffects().forEach(paramPotionEffect -> paramPlayer.removePotionEffect(paramPotionEffect.getType()));
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(paramItemStack);
+    public void handlePickaxeUnequip(Player player, ItemStack itemStack) {
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(itemStack);
         for (EvilPrisonEnchantment enchantment : hashMap.keySet())
-            enchantment.onUnequip(paramPlayer, paramItemStack, hashMap.get(enchantment));
+            enchantment.onUnequip(player, itemStack, hashMap.get(enchantment));
     }
 
-    public int getInventorySlot(Player paramPlayer, ItemStack paramItemStack) {
-        for (byte b = 0; b < paramPlayer.getInventory().getSize(); b++) {
-            ItemStack itemStack = paramPlayer.getInventory().getItem(b);
-            if (itemStack != null)
-                if (itemStack.equals(paramItemStack))
-                    return b;
+    public int getInventorySlot(Player player, ItemStack itemStack) {
+        for (byte slot = 0; slot < player.getInventory().getSize(); slot++) {
+            if (player.getInventory().getItem(slot).equals(itemStack))
+                return slot;
         }
         return -1;
     }
 
-    public ItemStack addEnchant(Player paramPlayer, ItemStack paramItemStack, int paramInt1, int paramInt2) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(paramInt1);
-        if (enchantment == null || paramItemStack == null)
-            return paramItemStack;
-        NBTItem nBTItem = new NBTItem(paramItemStack, true);
-        if (paramInt2 > 0)
-            nBTItem.setInteger("ultra-prison-ench-" + enchantment.getId(), paramInt2);
-        if (!nBTItem.hasKey("pickaxe-id"))
-            nBTItem.setString("pickaxe-id", UUID.randomUUID().toString());
-        nBTItem.mergeCustomNBT(paramItemStack);
-        applyLoreToPickaxe(paramItemStack);
-        return paramItemStack;
+    public ItemStack addEnchant(ItemStack itemStack, int id, int levels) {
+        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
+        if (enchantment == null || itemStack == null) return itemStack;
+        NBTItem nbtItem = new NBTItem(itemStack, true);
+        if (levels > 0) nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + enchantment.getId(), levels);
+        if (!nbtItem.hasKey(PICKAXE_ID_NBT_IDENTIFIER)) nbtItem.setString(PICKAXE_ID_NBT_IDENTIFIER, UUID.randomUUID().toString());
+        nbtItem.mergeCustomNBT(itemStack);
+        applyLoreToPickaxe(itemStack);
+        return itemStack;
     }
 
-    public ItemStack addEnchant(ItemStack paramItemStack, int paramInt1, int paramInt2) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(paramInt1);
-        if (enchantment == null || paramItemStack == null)
-            return paramItemStack;
-        NBTItem nBTItem = new NBTItem(paramItemStack);
-        if (paramInt2 > 0)
-            nBTItem.setInteger("ultra-prison-ench-" + enchantment.getId(), paramInt2);
-        if (!nBTItem.hasKey("pickaxe-id"))
-            nBTItem.setString("pickaxe-id", UUID.randomUUID().toString());
-        paramItemStack = nBTItem.getItem();
-        applyLoreToPickaxe(paramItemStack);
-        return paramItemStack;
+    public void removeEnchant(ItemStack itemStack, int id, int levels) {
+        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
+        if (enchantment == null || itemStack == null || levels == 0) return;
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + id, levels - 1);
+        nbtItem.mergeCustomNBT(itemStack);
+        applyLoreToPickaxe(itemStack);
     }
 
-    public void addEnchant(Player player, ItemStack itemStack, EvilPrisonEnchantment enchantment, int paramInt) {
-        addEnchant(player, itemStack, enchantment.getId(), paramInt);
+    public void setEnchant(ItemStack itemStack, int id, int levels) {
+        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
+        if (enchantment == null || itemStack == null) return;
+        NBTItem nbtItem = new NBTItem(itemStack);
+        nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + id, levels);
+        nbtItem.mergeCustomNBT(itemStack);
+        applyLoreToPickaxe(itemStack);
     }
 
-    public boolean removeEnchant(Player paramPlayer, int paramInt) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(paramInt);
-        if (enchantment == null || paramPlayer.getItemInHand() == null)
-            return false;
-        ItemStack itemStack = paramPlayer.getItemInHand();
-        NBTItem nBTItem = new NBTItem(itemStack);
-        nBTItem.removeKey("ultra-prison-ench-" + paramInt);
-        paramPlayer.setItemInHand(nBTItem.getItem());
-        applyLoreToPickaxe(paramPlayer.getItemInHand());
-        return true;
+    public Item getGuiItem(EvilPrisonEnchantment enchantment, EnchantGUI enchantGUI, int currentLevel) {
+        ItemStackBuilder itemStackBuilder = ItemStackBuilder.of(enchantment.getMaterial());
+        if (enchantment.getBase64() != null && !enchantment.getBase64().isEmpty())
+            itemStackBuilder = ItemStackBuilder.of(SkullUtils.getCustomTextureHead(enchantment.getBase64()));
+        itemStackBuilder.name(enchantment.getName());
+        itemStackBuilder.lore(translateLore(enchantment, this.ENCHANT_GUI_ITEM_LORE, currentLevel));
+        return itemStackBuilder.buildItem().bind(e -> {
+            if (!enchantment.canBeBought(enchantGUI.getPickAxe())) return;
+            if (e.getClick() == ClickType.LEFT) buyEnchant(enchantment, enchantGUI, currentLevel, 1);
+            else if (e.getClick() == ClickType.RIGHT) buyEnchant(enchantment, enchantGUI, currentLevel, 10);
+            else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.SHIFT_RIGHT) buyEnchant(enchantment, enchantGUI, currentLevel, 100);
+            else if (e.getClick() == ClickType.DROP) buyEnchant(enchantment, enchantGUI, currentLevel,
+                    getMaxEnchantPurchasable(enchantment, currentLevel, this.enchants.getPlugin().getTokens().getApi().getPlayerTokens(enchantGUI.getPlayer())));
+            enchantGUI.redraw();
+        }, ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.RIGHT, ClickType.LEFT, ClickType.DROP).build();
     }
 
-    public ItemStack removeEnchant(ItemStack paramItemStack, Player paramPlayer, int paramInt1, int paramInt2) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(paramInt1);
-        if (enchantment == null || paramItemStack == null || paramInt2 == 0)
-            return paramItemStack;
-        NBTItem nBTItem = new NBTItem(paramItemStack);
-        nBTItem.setInteger("ultra-prison-ench-" + paramInt1, paramInt2 - 1);
-        nBTItem.mergeCustomNBT(paramItemStack);
-        applyLoreToPickaxe(paramItemStack);
-        return paramItemStack;
+    private int getMaxEnchantPurchasable(EvilPrisonEnchantment enchantment, int currentLevel, long tokens) {
+        return (int) Math.floor((float) (enchantment.getIncreaseCost() + 2 * tokens) /
+                (2 * currentLevel * enchantment.getIncreaseCost() + 2 * enchantment.getCost() + enchantment.getIncreaseCost()));
     }
 
-    public ItemStack setEnchant(ItemStack paramItemStack, Player paramPlayer, int paramInt1, int paramInt2) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(paramInt1);
-        if (enchantment == null || paramItemStack == null)
-            return paramItemStack;
-        NBTItem nBTItem = new NBTItem(paramItemStack);
-        nBTItem.setInteger("ultra-prison-ench-" + paramInt1, paramInt2);
-        nBTItem.mergeCustomNBT(paramItemStack);
-        applyLoreToPickaxe(paramItemStack);
-        return paramItemStack;
+    private long getEnchantPrice(EvilPrisonEnchantment enchantment, int currentLevel, int levelsToBuy) {
+        return (long) Math.floor((float) (levelsToBuy *
+                (2 * currentLevel * enchantment.getIncreaseCost() + enchantment.getCost() +
+                        levelsToBuy * enchantment.getIncreaseCost() - enchantment.getIncreaseCost())) / 2);
     }
 
-    public boolean buyEnchant(EvilPrisonEnchantment enchantment, EnchantGUI paramEnchantGUI, int paramInt1, int paramInt2) {
-        if (paramInt1 >= enchantment.getMaxLevel()) {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_max_level"));
-            return false;
+    public void buyEnchant(EvilPrisonEnchantment enchantment, EnchantGUI enchantGUI, int currentLevel, int levelsToBuy) {
+        if (currentLevel >= enchantment.getMaxLevel()) {
+            PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&e&l(!) &eYou have already maxed out this enchantment");
+            return;
         }
-        if (paramInt1 + paramInt2 > enchantment.getMaxLevel()) {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_max_level_exceed"));
-            return false;
+        if (currentLevel + levelsToBuy > enchantment.getMaxLevel()) {
+            PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&e&l(!) &eThis transaction would exceed the max level for this enchant.\"");
+            return;
         }
-        long l1 = 0L;
-        for (byte b = 0; b < paramInt2; b++)
-            l1 += enchantment.getCostOfLevel(paramInt1 + b + 1);
-        if (!this.enchants.getPlugin().getTokens().getApi().hasEnough(paramEnchantGUI.getPlayer(), l1)) {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("not_enough_tokens"));
-            return false;
+        long cost = getEnchantPrice(enchantment, currentLevel, levelsToBuy);
+        if (!this.enchants.getPlugin().getTokens().getApi().hasEnough(enchantGUI.getPlayer(), cost)) {
+            PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&c&l(!) &cNot Enough Tokens");
+            return;
         }
-        this.enchants.getPlugin().getTokens().getApi().removeTokens(paramEnchantGUI.getPlayer(), l1);
-        addEnchant(paramEnchantGUI.getPlayer(), paramEnchantGUI.getPickAxe(), enchantment.getId(), paramInt1 + paramInt2);
-        enchantment.onUnequip(paramEnchantGUI.getPlayer(), paramEnchantGUI.getPickAxe(), paramInt1);
-        enchantment.onEquip(paramEnchantGUI.getPlayer(), paramEnchantGUI.getPickAxe(), paramInt1 + paramInt2);
-        paramEnchantGUI.getPlayer().getInventory().setItem(paramEnchantGUI.getPickaxePlayerInventorySlot(), paramEnchantGUI.getPickAxe());
-        if (paramInt2 == 1) {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_bought").replace("%tokens%", String.valueOf(l1)));
-        } else {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_bought_multiple")
-                    .replace("%amount%", String.valueOf(paramInt2))
-                    .replace("%enchant%", enchantment.getName())
-                    .replace("%tokens%", String.format("%,d", l1)));
-        }
-        return true;
+        this.enchants.getPlugin().getTokens().getApi().removeTokens(enchantGUI.getPlayer(), cost);
+        addEnchant(enchantGUI.getPickAxe(), enchantment.getId(), currentLevel + levelsToBuy);
+        enchantment.onUnequip(enchantGUI.getPlayer(), enchantGUI.getPickAxe(), currentLevel);
+        enchantment.onEquip(enchantGUI.getPlayer(), enchantGUI.getPickAxe(), currentLevel + levelsToBuy);
+        enchantGUI.getPlayer().getInventory().setItem(enchantGUI.getPickaxePlayerInventorySlot(), enchantGUI.getPickAxe());
+        PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&e&lENCHANTS &8» &f7You purchased &6%amount% %enchant% &flevels for &6%tokens% tokens."
+                .replace("%amount%", String.valueOf(levelsToBuy))
+                .replace("%enchant%", enchantment.getName())
+                .replace("%tokens%", String.format("%,d", cost)));
     }
 
-    public boolean disenchant(EvilPrisonEnchantment enchantment, DisenchantGUI paramDisenchantGUI, int paramInt1, int paramInt2) {
+    public void disenchant(EvilPrisonEnchantment enchantment, DisenchantGUI paramDisenchantGUI, int paramInt1, int paramInt2) {
         if (paramInt1 <= 0) {
             PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_no_level"));
-            return false;
+            return;
         }
         long l = 0L;
         enchantment.onUnequip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), paramInt1);
@@ -313,7 +261,7 @@ public class EnchantsManager {
             if (paramInt1 <= 0)
                 break;
             long l1 = enchantment.getCostOfLevel(paramInt1);
-            removeEnchant(paramDisenchantGUI.getPickAxe(), paramDisenchantGUI.getPlayer(), enchantment.getId(), paramInt1);
+            removeEnchant(paramDisenchantGUI.getPickAxe(), enchantment.getId(), paramInt1);
             paramDisenchantGUI.getPlayer().getInventory().setItem(paramDisenchantGUI.getPickaxePlayerInventorySlot(), paramDisenchantGUI.getPickAxe());
             l = (long)(l + l1 * this.refundPercentage / 100.0D);
         }
@@ -321,7 +269,6 @@ public class EnchantsManager {
         this.enchants.getPlugin().getTokens().getApi().addTokens(paramDisenchantGUI.getPlayer(), l, false);
         PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_refunded").replace("%amount%", String.valueOf(paramInt2)).replace("%enchant%", enchantment.getName()));
         PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_tokens_back").replace("%tokens%", String.valueOf(l)));
-        return true;
     }
 
     public void disenchantMax(EvilPrisonEnchantment enchantment, DisenchantGUI paramDisenchantGUI, int paramInt) {
@@ -350,7 +297,7 @@ public class EnchantsManager {
             this.lockedPlayers.remove(paramDisenchantGUI.getPlayer().getUniqueId());
             Schedulers.sync().run(() -> {
                 enchantment.onUnequip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), paramInt);
-                this.setEnchant(paramDisenchantGUI.getPickAxe(), paramDisenchantGUI.getPlayer(), enchantment.getId(), j);
+                this.setEnchant(paramDisenchantGUI.getPickAxe(), enchantment.getId(), j);
                 paramDisenchantGUI.getPlayer().getInventory().setItem(paramDisenchantGUI.getPickaxePlayerInventorySlot(), paramDisenchantGUI.getPickAxe());
                 enchantment.onEquip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), j);
                 paramDisenchantGUI.redraw();
@@ -367,7 +314,7 @@ public class EnchantsManager {
         if (enchantment.getBase64() != null && !enchantment.getBase64().isEmpty())
             itemStackBuilder = ItemStackBuilder.of(SkullUtils.getCustomTextureHead(enchantment.getBase64()));
         itemStackBuilder.name(enchantment.isRefundEnabled() ? enchantment.getName() : this.enchants.getMessage("enchant_cant_disenchant"));
-        itemStackBuilder.lore(enchantment.isRefundEnabled() ? translateLore(enchantment, this.DISENCHANT_GUI_ITEM_LORE, paramInt) : new ArrayList());
+        itemStackBuilder.lore(enchantment.isRefundEnabled() ? translateLore(enchantment, this.DISENCHANT_GUI_ITEM_LORE, paramInt) : new ArrayList<>());
         return enchantment.isRefundEnabled() ? itemStackBuilder.buildItem().bind(paramInventoryClickEvent -> {
             if (paramInventoryClickEvent.getClick() == ClickType.MIDDLE || paramInventoryClickEvent.getClick() == ClickType.SHIFT_RIGHT) {
                 disenchant(enchantment, paramDisenchantGUI, paramInt, 100);
@@ -381,77 +328,11 @@ public class EnchantsManager {
             } else if (paramInventoryClickEvent.getClick() == ClickType.DROP) {
                 disenchantMax(enchantment, paramDisenchantGUI, paramInt);
             }
-        }, new ClickType[] { ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.LEFT, ClickType.RIGHT, ClickType.DROP }).build() : itemStackBuilder.buildConsumer(paramInventoryClickEvent -> paramInventoryClickEvent.getWhoClicked().sendMessage(this.enchants.getMessage("enchant_cant_disenchant")));
+        }, ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.LEFT, ClickType.RIGHT, ClickType.DROP).build() : itemStackBuilder.buildConsumer(paramInventoryClickEvent -> paramInventoryClickEvent.getWhoClicked().sendMessage(this.enchants.getMessage("enchant_cant_disenchant")));
     }
 
-    public Item getGuiItem(EvilPrisonEnchantment enchantment, EnchantGUI paramEnchantGUI, int paramInt) {
-        ItemStackBuilder itemStackBuilder = ItemStackBuilder.of(enchantment.getMaterial());
-        if (enchantment.getBase64() != null && !enchantment.getBase64().isEmpty())
-            itemStackBuilder = ItemStackBuilder.of(SkullUtils.getCustomTextureHead(enchantment.getBase64()));
-        itemStackBuilder.name(enchantment.getName());
-        itemStackBuilder.lore(translateLore(enchantment, this.ENCHANT_GUI_ITEM_LORE, paramInt));
-        return itemStackBuilder.buildItem().bind(paramInventoryClickEvent -> {
-            if (!enchantment.canBeBought(paramEnchantGUI.getPickAxe()))
-                return;
-            if (paramInventoryClickEvent.getClick() == ClickType.MIDDLE || paramInventoryClickEvent.getClick() == ClickType.SHIFT_RIGHT) {
-                buyEnchant(enchantment, paramEnchantGUI, paramInt, 100);
-                paramEnchantGUI.redraw();
-            } else if (paramInventoryClickEvent.getClick() == ClickType.LEFT) {
-                buyEnchant(enchantment, paramEnchantGUI, paramInt, 1);
-                paramEnchantGUI.redraw();
-            } else if (paramInventoryClickEvent.getClick() == ClickType.RIGHT) {
-                buyEnchant(enchantment, paramEnchantGUI, paramInt, 10);
-                paramEnchantGUI.redraw();
-            } else if (paramInventoryClickEvent.getClick() == ClickType.DROP) {
-                buyMaxEnchant(enchantment, paramEnchantGUI, paramInt);
-            }
-        }, new ClickType[] { ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.RIGHT, ClickType.LEFT, ClickType.DROP }).build();
-    }
-
-    private void buyMaxEnchant(EvilPrisonEnchantment enchantment, EnchantGUI paramEnchantGUI, int paramInt) {
-        if (paramInt >= enchantment.getMaxLevel()) {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_max_level"));
-            return;
-        }
-        if (this.lockedPlayers.contains(paramEnchantGUI.getPlayer().getUniqueId())) {
-            PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("transaction_in_progress"));
-            return;
-        }
-        this.lockedPlayers.add(paramEnchantGUI.getPlayer().getUniqueId());
-        Schedulers.async().run(() -> {
-            byte b1 = 0;
-            long l = 0L;
-            while (paramEnchantGUI.getPlayer().isOnline() && paramInt + b1 + 1 <= enchantment.getMaxLevel() && this.enchants.getPlugin().getTokens().getApi().hasEnough(paramEnchantGUI.getPlayer(), l + enchantment.getCostOfLevel(paramInt + b1 + 1)))
-                l += enchantment.getCostOfLevel(paramInt + ++b1 + 1);
-            if (!paramEnchantGUI.getPlayer().isOnline()) {
-                this.lockedPlayers.remove(paramEnchantGUI.getPlayer().getUniqueId());
-                return;
-            }
-            if (b1 == 0) {
-                this.lockedPlayers.remove(paramEnchantGUI.getPlayer().getUniqueId());
-                PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("not_enough_tokens"));
-                return;
-            }
-            this.enchants.getPlugin().getTokens().getApi().removeTokens(paramEnchantGUI.getPlayer(), l);
-            this.lockedPlayers.remove(paramEnchantGUI.getPlayer().getUniqueId());
-            byte finalB = b1;
-            Schedulers.sync().run(() -> {
-                enchantment.onUnequip(paramEnchantGUI.getPlayer(), paramEnchantGUI.getPickAxe(), paramInt);
-                this.addEnchant(paramEnchantGUI.getPlayer(), paramEnchantGUI.getPickAxe(), enchantment.getId(), paramInt + finalB);
-                enchantment.onEquip(paramEnchantGUI.getPlayer(), paramEnchantGUI.getPickAxe(), paramInt + finalB);
-                paramEnchantGUI.getPlayer().getInventory().setItem(paramEnchantGUI.getPickaxePlayerInventorySlot(), paramEnchantGUI.getPickAxe());
-                paramEnchantGUI.redraw();
-            });
-            if (b1 == 1) {
-                PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_bought").replace("%tokens%", String.valueOf(l)));
-            } else {
-                PlayerUtils.sendMessage(paramEnchantGUI.getPlayer(), this.enchants.getMessage("enchant_bought_multiple").replace("%amount%", String.valueOf(b1)).replace("%enchant%", enchantment.getName()).replace("%tokens%", String.format("%,d", l)));
-            }
-        });
-    }
-
-    private List<String> translateLore(EvilPrisonEnchantment enchantment, List<String> paramList, int paramInt) {
-        ArrayList<String> arrayList = new ArrayList();
+    public List<String> translateLore(EvilPrisonEnchantment enchantment, List<String> paramList, int paramInt) {
+        ArrayList<String> arrayList = new ArrayList<>();
         for (String str : paramList) {
             if (str.contains("%description%")) {
                 arrayList.addAll(enchantment.getDescription());

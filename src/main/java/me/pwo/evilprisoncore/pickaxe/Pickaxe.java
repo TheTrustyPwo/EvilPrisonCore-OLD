@@ -24,8 +24,7 @@ public class Pickaxe implements EvilPrisonModules {
     @Override
     public void enable() {
         pickaxeLevels = new PickaxeLevels(plugin);
-        if (plugin.getConfig().getBoolean("modules.pickaxe.pickaxe-levels"))
-            plugin.loadModule(pickaxeLevels);
+        plugin.loadModule(pickaxeLevels);
         this.enabled = true;
     }
 

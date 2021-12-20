@@ -33,7 +33,7 @@ public class TokensManager {
     );
     private final HashMap<UUID, Long> tokensCache = new HashMap<>();
     private LinkedHashMap<UUID, Long> top10Tokens = new LinkedHashMap<>();
-    private Task task;
+    private Task updateTokensTopTask;
     private boolean updating;
 
     public TokensManager(Tokens tokens) {
@@ -52,18 +52,16 @@ public class TokensManager {
 
     public void stopUpdating() {
         this.tokens.getPlugin().getLogger().info("Stopping updating Top 10");
-        this.task.close();
+        this.updateTokensTopTask.close();
     }
 
     private void updateTokensTop() {
         this.updating = true;
-        this.task = Schedulers.async().runRepeating(() -> {
+        this.updateTokensTopTask = Schedulers.async().runRepeating(() -> {
             this.updating = true;
             Players.all().forEach((player) -> this.savePlayerData(player, false, false));
             this.top10Tokens = new LinkedHashMap<>();
-            this.tokens.getPlugin().debug("Starting updating TokensTop");
             this.top10Tokens = (LinkedHashMap<UUID, Long>) this.tokens.getPlugin().getPluginDatabase().getTop10Tokens();
-            this.tokens.getPlugin().debug("TokensTop updated!");
             this.updating = false;
         }, 30L, TimeUnit.SECONDS, 10, TimeUnit.MINUTES);
     }
@@ -167,7 +165,7 @@ public class TokensManager {
             PlayerUtils.sendMessage(sender, "&c&lLeaderboard is currently updating...");
             return;
         }
-        for (String str : this.tokensTopFormat) {
+        for (String str : tokensTopFormat) {
             if (str.startsWith("{FOR_EACH_PLAYER}")) {
                 str = str.replace("{FOR_EACH_PLAYER} ", "");
                 for (byte position = 0; position < 10; position++) {

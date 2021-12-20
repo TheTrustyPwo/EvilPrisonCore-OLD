@@ -13,15 +13,15 @@ public class FortuneEnchant extends EvilPrisonEnchantment {
         super(enchants, 2);
     }
 
-    public void onEquip(Player paramPlayer, ItemStack paramItemStack, int paramInt) {
-        ItemMeta itemMeta = paramItemStack.getItemMeta();
-        itemMeta.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, paramInt, true);
-        paramItemStack.setItemMeta(itemMeta);
+    public void onEquip(Player player, ItemStack itemStack, int level) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, level, true);
+        itemStack.setItemMeta(itemMeta);
     }
 
-    public void onUnequip(Player paramPlayer, ItemStack paramItemStack, int paramInt) {}
+    public void onUnequip(Player player, ItemStack itemStack, int level) {}
 
-    public void onBlockBreak(BlockBreakEvent paramBlockBreakEvent, int paramInt) {}
+    public void onBlockBreak(BlockBreakEvent e, int level, double random) {}
 
     public void reload() {}
 }

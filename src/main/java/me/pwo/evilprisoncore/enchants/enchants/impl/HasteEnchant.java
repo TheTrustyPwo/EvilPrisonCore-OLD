@@ -13,19 +13,17 @@ public class HasteEnchant extends EvilPrisonEnchantment {
         super(enchants, 3);
     }
 
-    public void onEquip(Player paramPlayer, ItemStack paramItemStack, int paramInt) {
-        if (paramInt == 0) {
-            onUnequip(paramPlayer, paramItemStack, paramInt);
-            return;
-        }
-        paramPlayer.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, paramInt - 1, true, true), true);
+    public void onEquip(Player player, ItemStack itemStack, int level) {}
+
+    public void onUnequip(Player player, ItemStack itemStack, int level) {
+        player.removePotionEffect(PotionEffectType.FAST_DIGGING);
     }
 
-    public void onUnequip(Player paramPlayer, ItemStack paramItemStack, int paramInt) {
-        paramPlayer.removePotionEffect(PotionEffectType.FAST_DIGGING);
+    public void onBlockBreak(BlockBreakEvent e, int level, double random) {
+        if (!e.getPlayer().hasPotionEffect(PotionEffectType.FAST_DIGGING) && level > 0)
+            e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 15, level - 1, true, true), true);
     }
 
-    public void onBlockBreak(BlockBreakEvent paramBlockBreakEvent, int paramInt) {}
 
     public void reload() {}
 }
