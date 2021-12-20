@@ -12,15 +12,13 @@ public class PickaxeLevel {
 
     private final long blocksRequired;
 
-    private final String displayName;
 
     private final List<String> rewards;
 
-    @ConstructorProperties({"level", "blocksRequired", "displayName", "rewards"})
-    public PickaxeLevel(int paramInt, long paramLong, String paramString, List<String> paramList) {
+    @ConstructorProperties({"level", "blocksRequired", "rewards"})
+    public PickaxeLevel(int paramInt, long paramLong, List<String> paramList) {
         this.level = paramInt;
         this.blocksRequired = paramLong;
-        this.displayName = paramString;
         this.rewards = paramList;
     }
 
@@ -32,19 +30,11 @@ public class PickaxeLevel {
         return this.blocksRequired;
     }
 
-    public String getDisplayName() {
-        return this.displayName;
-    }
-
     public void giveRewards(Player paramPlayer) {
         if (!Bukkit.isPrimaryThread()) {
             Schedulers.sync().run(() -> this.rewards.forEach(paramString -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), paramString.replace("%player%", paramPlayer.getName()))));
         } else {
             this.rewards.forEach(paramString -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), paramString.replace("%player%", paramPlayer.getName())));
         }
-    }
-
-    public String getDisplayName(Player paramPlayer) {
-        return this.displayName.replace("%player%", paramPlayer.getName());
     }
 }

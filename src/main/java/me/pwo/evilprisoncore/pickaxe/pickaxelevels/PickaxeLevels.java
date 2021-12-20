@@ -66,16 +66,15 @@ public class PickaxeLevels implements EvilPrisonModules {
         if (configurationSection == null)
             return;
         for (String str1 : configurationSection.getKeys(false)) {
-            int i = Integer.parseInt(str1);
-            String str2 = Text.colorize(getConfig().getString("levels." + str1 + ".display_name"));
-            long l = getConfig().getLong("levels." + str1 + ".blocks_required");
-            List<String> list = getConfig().getStringList("levels." + str1 + ".rewards");
-            PickaxeLevel pickaxeLevel = new PickaxeLevel(i, l, str2, list);
-            if (i == 1)
+            int level = Integer.parseInt(str1);
+            long blocksRequired = getConfig().getLong("levels." + str1 + ".blocks_required");
+            List<String> rewards = getConfig().getStringList("levels." + str1 + ".rewards");
+            PickaxeLevel pickaxeLevel = new PickaxeLevel(level, blocksRequired, rewards);
+            if (level == 1)
                 this.defaultLevel = pickaxeLevel;
-            this.pickaxeLevels.put(i, pickaxeLevel);
+            this.pickaxeLevels.put(level, pickaxeLevel);
             this.maxLevel = pickaxeLevel;
-            this.plugin.getLogger().info("Loaded Pickaxe Level " + i);
+            this.plugin.getLogger().info("Loaded Pickaxe Level " + level);
         }
     }
 
@@ -109,7 +108,7 @@ public class PickaxeLevels implements EvilPrisonModules {
                     PickaxeLevel pickaxeLevel2 = getNextPickaxeLevel(pickaxeLevel1);
                     if (pickaxeLevel2 != null && this.plugin.getEnchants().getEnchantsManager().getBlocksBroken(paramBlockBreakEvent.getPlayer().getItemInHand()) >= pickaxeLevel2.getBlocksRequired()) {
                         pickaxeLevel2.giveRewards(paramBlockBreakEvent.getPlayer());
-                        paramBlockBreakEvent.getPlayer().setItemInHand(setPickaxeLevel(paramBlockBreakEvent.getPlayer().getItemInHand(), pickaxeLevel2, paramBlockBreakEvent.getPlayer()));
+                        paramBlockBreakEvent.getPlayer().setItemInHand(setPickaxeLevel(paramBlockBreakEvent.getPlayer().getItemInHand(), pickaxeLevel2));
                         PlayerUtils.sendMessage(paramBlockBreakEvent.getPlayer(), getMessage("pickaxe-level-up").replace("%level%", String.valueOf(pickaxeLevel2.getLevel())));
                     }
                 }).bindWith(this.plugin);
@@ -117,7 +116,7 @@ public class PickaxeLevels implements EvilPrisonModules {
                 .handler(paramPlayerItemHeldEvent -> {
                     ItemStack itemStack = paramPlayerItemHeldEvent.getPlayer().getInventory().getItem(paramPlayerItemHeldEvent.getNewSlot());
                     if (itemStack != null && getPlugin().isPickaxeSupported(itemStack.getType()) && getPickaxeLevel(itemStack) == null)
-                        paramPlayerItemHeldEvent.getPlayer().getInventory().setItem(paramPlayerItemHeldEvent.getNewSlot(), addDefaultPickaxeLevel(itemStack, paramPlayerItemHeldEvent.getPlayer()));
+                        paramPlayerItemHeldEvent.getPlayer().getInventory().setItem(paramPlayerItemHeldEvent.getNewSlot(), addDefaultPickaxeLevel(itemStack));
                 }).bindWith(this.plugin);
     }
 
@@ -150,7 +149,7 @@ public class PickaxeLevels implements EvilPrisonModules {
         return this.pickaxeLevels.get(nBTItem.getInteger(NBT_TAG_IDENTIFIER));
     }
 
-    public ItemStack setPickaxeLevel(ItemStack paramItemStack, PickaxeLevel paramPickaxeLevel, Player paramPlayer) {
+    public ItemStack setPickaxeLevel(ItemStack paramItemStack, PickaxeLevel paramPickaxeLevel) {
         if (paramPickaxeLevel.getLevel() <= 0 || paramPickaxeLevel.getLevel() > this.maxLevel.getLevel())
             return paramItemStack;
         NBTItem nBTItem = new NBTItem(paramItemStack);
@@ -158,15 +157,13 @@ public class PickaxeLevels implements EvilPrisonModules {
             nBTItem.setInteger(NBT_TAG_IDENTIFIER, 0);
         nBTItem.setInteger(NBT_TAG_IDENTIFIER, paramPickaxeLevel.getLevel());
         ItemStackBuilder itemStackBuilder = ItemStackBuilder.of(nBTItem.getItem());
-        if (paramPickaxeLevel.getDisplayName() != null && !paramPickaxeLevel.getDisplayName().isEmpty())
-            itemStackBuilder = itemStackBuilder.name(paramPickaxeLevel.getDisplayName(paramPlayer));
         paramItemStack = itemStackBuilder.build();
         this.plugin.getEnchants().getEnchantsManager().updatePickaxe(paramItemStack);
         return paramItemStack;
     }
 
-    private ItemStack addDefaultPickaxeLevel(ItemStack paramItemStack, Player paramPlayer) {
-        return setPickaxeLevel(paramItemStack, this.defaultLevel, paramPlayer);
+    private ItemStack addDefaultPickaxeLevel(ItemStack paramItemStack) {
+        return setPickaxeLevel(paramItemStack, this.defaultLevel);
     }
 
     public ItemStack findPickaxe(Player paramPlayer) {
@@ -177,11 +174,6 @@ public class PickaxeLevels implements EvilPrisonModules {
                 return itemStack;
         }
         return null;
-    }
-
-    public String getProgressBar(Player paramPlayer) {
-        ItemStack itemStack = findPickaxe(paramPlayer);
-        return getProgressBar(itemStack);
     }
 
     public String getProgressBar(ItemStack paramItemStack) {

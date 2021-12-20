@@ -22,6 +22,6 @@ public class PickaxeLevelsAPIImpl implements PickaxeLevelsAPI {
     }
 
     public void setPickaxeLevel(Player paramPlayer, ItemStack paramItemStack, PickaxeLevel paramPickaxeLevel) {
-        this.pickaxeLevels.setPickaxeLevel(paramItemStack, paramPickaxeLevel, paramPlayer);
+        this.pickaxeLevels.setPickaxeLevel(paramItemStack, paramPickaxeLevel);
     }
 }
