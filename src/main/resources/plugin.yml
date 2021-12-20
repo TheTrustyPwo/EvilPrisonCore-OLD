@@ -1,0 +1,13 @@
+name: EvilPrisonCore
+version: 1.0
+authors:
+  - TheTrustyPwo
+  - Stucknight
+prefix: EvilPrisonCore
+main: me.pwo.evilprisoncore.EvilPrisonCore
+description: A PrisonCore
+depend: [Vault, WorldGuard, WorldEdit, helper, NBTAPI]
+softdepend:
+  - PlaceholderAPI
+  - JetsPrisonMines
+  - Multiverse-Core

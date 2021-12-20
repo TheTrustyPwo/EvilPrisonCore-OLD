@@ -1,0 +1,62 @@
+no-permission: "&c&l(!) &fYou do not have permission to do that!"
+invalid-number: "&c%input% is not a number!"
+invalid-player: "&cPlayer &e%player% &cis not online/valid!"
+cannot-pay-self: "&cYou cannot pay yourself!"
+tokens:
+  not-enough-tokens: "&e&l(!) &eYou don't have enough tokens"
+  tokens-received-console: "&e&lTOKENS &8» &7You have received &f%tokens% tokens&7."
+  balance:
+    self: "&eYour Tokens: %tokens%"
+    others: "&e%player%'s Tokens: %tokens%"
+  pay:
+    sender:  "&eYou have sent %tokens% tokens to %player%"
+    receiver: "&eYou received %tokens% tokens from %player%."
+  withdraw: "&aYou have withdrawn &e%amount%x %value% Tokens!"
+  redeem: "&e&l(!) &eYou redeemed &f%tokens% &etoken(s)"
+  set:
+    admin: "&aSuccessfully set &e%player%'s &atokens to &e%tokens%."
+    player: "&e&lTOKENS &8» &7Your tokens were set to &f%tokens%&7."
+  give:
+    admin:
+    player: "&e&lTOKENS &8» &7You have received &f%tokens% tokens&7."
+  take:
+    admin: "&aSuccessfully removed &e%tokens% &atokens from &e%player%."
+    player: "&e&lTOKENS &8» &7You have been taken of &f%tokens% tokens&7."
+  top:
+    - "&e&m-------&f&m-------&e&m--------&f&m--------&e&m--------&f&m-------&e&m-------"
+    - "&e&lTOKENS TOP"
+    - "{FOR_EACH_PLAYER} &f&l#%position%. &e%player% &8&7%tokens% Tokens"
+    - "&e&m-------&f&m-------&e&m--------&f&m--------&e&m--------&f&m-------&e&m-------"
+  help:
+    player:
+      - "&e----- &6Tokens Commands &e-----"
+      - " "
+      - "&6/tokens"
+      - "&6/tokens &7<player>"
+      - "&6/tokens &ehelp"
+      - "&6/tokens &epay &7<player> &7<amount>"
+      - "&6/tokens &ewithdraw &e[amount] &e[value]"
+    admin:
+      - "&6/tokens &eset &7<player> &7<amount>"
+      - "&6/tokens &egive &7<player> &7<amount>"
+      - "&6/tokens &etake &7<player> &7<amount>"
+    info:
+      - " "
+      - "&7<> &8- &fRequired Arguments"
+      - "&e[] &8- &fOptional Arguments"
+      - " "
+      - "&6&lAliases: &e%aliases%"
+
+pickaxe:
+  pickaxe-levels:
+    levelup: "&e&lPICKAXE &8» &7Your current pickaxe just leveled up to &eLevel %level%&7!"
+  pickaxe-rename:
+    not-holding-pickaxe: "&cYou must be holding a pickaxe to do that!"
+
+enchants:
+  explosive:
+    enable: "&e&l(!) &7You've &a&lENABLED &7explosive."
+    disable: "&e&l(!) &7You've &c&lDISABLED &7explosive."
+  shockwave:
+    enable: "&e&l(!) &7You've &a&lENABLED &7shockwave."
+    disable: "&e&l(!) &7You've &c&lDISABLED &7shockwave."
