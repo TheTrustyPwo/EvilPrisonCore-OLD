@@ -25,7 +25,7 @@ public class GemsGiveCommand extends GemsCommand {
                 }
                 this.gems.getGemsManager().giveGems(player, amount,applyMultiplier);
                 if (sender instanceof ConsoleCommandSender && player.isOnline())
-                    PlayerUtils.sendMessage(player.getPlayer(), "&e&lTOKENS &8&7You have received &f%gems% gems&7."
+                    PlayerUtils.sendMessage(player.getPlayer(), "&e&lGEMS &8&7You have received &f%gems% gems&7."
                             .replace("%gems%", String.valueOf(amount))
                             .replace("%player%", sender.getName()));
                 if (!(sender instanceof ConsoleCommandSender)) {
