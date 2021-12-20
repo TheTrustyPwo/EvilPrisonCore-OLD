@@ -1,9 +1,7 @@
 levels:
   1:
-    display_name: "&7Level 1 Pickaxe"
     blocks_required: 0
   2:
-    display_name: "&aLevel 2 Pickaxe"
     blocks_required: 1000
     rewards:
       - 'eco give %player% 1000'
