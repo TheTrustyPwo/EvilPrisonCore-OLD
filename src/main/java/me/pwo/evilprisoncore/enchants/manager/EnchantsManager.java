@@ -141,10 +141,10 @@ public class EnchantsManager {
         return nBTItem.getLong("blocks-broken");
     }
 
-    public synchronized void addBlocksBrokenToItem(Player paramPlayer, int paramInt) {
+    public synchronized void addBlocksBrokenToItem(Player player, int paramInt) {
         if (paramInt == 0)
             return;
-        NBTItem nBTItem = new NBTItem(paramPlayer.getItemInHand());
+        NBTItem nBTItem = new NBTItem(player.getItemInHand());
         try {
             int i = nBTItem.getInteger("blocks-broken");
             if (i > 0) {
@@ -155,8 +155,8 @@ public class EnchantsManager {
         if (!nBTItem.hasKey("blocks-broken"))
             nBTItem.setLong("blocks-broken", 0L);
         nBTItem.setLong("blocks-broken", nBTItem.getLong("blocks-broken") + paramInt);
-        paramPlayer.setItemInHand(nBTItem.getItem());
-        applyLoreToPickaxe(paramPlayer.getItemInHand());
+        player.setItemInHand(nBTItem.getItem());
+        applyLoreToPickaxe(player.getItemInHand());
     }
 
     public boolean hasEnchant(Player paramPlayer, int paramInt) {
