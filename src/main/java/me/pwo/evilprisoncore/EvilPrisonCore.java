@@ -1,7 +1,5 @@
 package me.pwo.evilprisoncore;
 
-import me.jet315.prisonmines.JetsPrisonMines;
-import me.jet315.prisonmines.JetsPrisonMinesAPI;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.autominer.AutoMiner;
@@ -34,7 +32,6 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private FileUtils fileUtils;
     private List<Material> pickaxesSupported;
     private Economy economy;
-    private JetsPrisonMinesAPI jetsPrisonMinesAPI;
 
     private Tokens tokens;
     private Ranks ranks;
@@ -58,10 +55,6 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
 
     public Economy getEconomy() {
         return economy;
-    }
-
-    public JetsPrisonMinesAPI getJetsPrisonMinesAPI() {
-        return jetsPrisonMinesAPI;
     }
 
     public Tokens getTokens() {
@@ -133,7 +126,6 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         registerEvents();
         registerCommands();
         registerPlaceholders();
-        registerJetsPrisonMines();
         getLogger().info("EvilPrisonCore has enabled!");
     }
 
@@ -157,11 +149,6 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private void registerPlaceholders() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
             (new EvilPrisonPAPIPlaceholders(this)).register();
-    }
-
-    private void registerJetsPrisonMines() {
-        if (Bukkit.getPluginManager().getPlugin("JetsPrisonMines") != null)
-            this.jetsPrisonMinesAPI = ((JetsPrisonMines)getServer().getPluginManager().getPlugin("JetsPrisonMines")).getAPI();
     }
 
     public void debug(String paramString) {
