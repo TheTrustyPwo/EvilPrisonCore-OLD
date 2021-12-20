@@ -1,0 +1,67 @@
+auto-miner-region:
+  name: automine
+  world: world
+  rewards:
+    - 'eco give %player% 1000'
+    - 'tokens give %player% 10'
+  reward-period: 5
+autominer_menu:
+  title: "&7AutoMiner Menu"
+  empty_slots: STAINED_GLASS_PANE
+  lines: 3
+  item:
+    lore:
+      - "&7%description%"
+      - " "
+      - "&6&l* &ePrice: &f%cost%"
+      - "&6&l* &eMax Level: &f%max_level%"
+      - "&6&l* &eCurrent Level: &f%current_level%"
+      - " "
+      - "&7&o(( &f&oLeft-Click&7&o to add 1 level ))"
+      - "&7&o(( &f&oRight-Click&7&o to add 10 levels ))"
+      - "&7&o(( &f&oMiddle-Click&7&o to add 100 levels ))"
+      - "&7&o(( &f&oPress 'Q'&7&o to buy as much as you can afford ))"
+    info:
+      enabled: true
+      slot: 15
+      material: BOOK
+      name: "&7Autominer"
+      lore:
+        - "Time left"
+autominer_upgrades:
+  '1':
+    RawName: "fortune"
+    Name: '&bFortune'
+    Material: BOOK
+    Enabled: true
+    InGuiSlot: 10
+    Increase-Cost-by: 75
+    Max: 300
+    Cost: 75
+    Base-Tokens: 10
+    Per-Level-Tokens: 2
+    Description:
+      - '&7&o(( Earns more tokens while automining ))'
+  '2':
+    RawName: "scavenger"
+    Name: '&bScavenger'
+    Material: BOOK
+    Enabled: true
+    InGuiSlot: 11
+    Increase-Cost-by: 75
+    Max: 300
+    Cost: 75
+    Commands:
+      - "give %player% diamond"
+    Description:
+      - '&7&o(( Earns more tokens while automining ))'
+messages:
+  not_enough_tokens: "&e&lAUTOMINER &8&cYou do not have enough tokens! (Needed: %tokens%)"
+  not_a_number: "&c%input% is not a number!"
+  player_not_online: "&cPlayer &e%player% &cis not online!"
+  autominer_disabled: "&e&l(!) &7You've &c&lDISABLED &7AutoMiner."
+  autominer_enabled: "&e&l(!) &7You've &a&lENABLED &7AutoMiner."
+  auto_miner_enabled: "&aYou are now in &a&lAUTO-MINER &amode."
+  auto_miner_disabled: "&cYou don't have &c&lAUTO-MINER &ctime."
+  auto_miner_time: "&e&lAUTOMINER &8&7You have &f%time% of Auto-Miner time."
+  auto_miner_time_add: "&e&lAUTOMINER &8&7You added &f%time% %timeunit% &7to &f%player%&7."
