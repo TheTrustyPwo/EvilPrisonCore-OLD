@@ -22,7 +22,7 @@ public class TokensSetCommand extends TokensCommand {
                     return false;
                 }
                 this.tokens.getTokensManager().setTokens(player, amount);
-                PlayerUtils.sendMessage(sender, "&aSuccessfully given &e%tokens% &atokens to &e%player%."
+                PlayerUtils.sendMessage(sender, "&aSuccessfully set &6%player%'s &atokens to &6⛁%tokens%."
                         .replaceAll("%player%", player.getName())
                         .replaceAll("%tokens%", String.valueOf(amount)));
                 return true;

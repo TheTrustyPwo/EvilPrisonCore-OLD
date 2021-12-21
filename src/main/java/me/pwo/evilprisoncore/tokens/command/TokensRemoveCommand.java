@@ -22,7 +22,7 @@ public class TokensRemoveCommand extends TokensCommand {
                     return false;
                 }
                 this.tokens.getTokensManager().removeTokens(player, amount);
-                PlayerUtils.sendMessage(sender, "&aSuccessfully removed &e%tokens% &atokens from &e%player%."
+                PlayerUtils.sendMessage(sender, "&aSuccessfully removed &6⛁%tokens% &afrom &6%player%."
                         .replace("%player%", player.getName())
                         .replace("%tokens%", String.valueOf(amount)));
                 return true;

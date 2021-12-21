@@ -125,7 +125,7 @@ public class TokensManager {
         Schedulers.async().run(() -> {
             long total = value * amount;
             removeTokens(player, total);
-            player.getInventory().addItem(createTokenItem(value, amount));
+            player.getInventory().addItem(createTokenItem(player, value, amount));
         });
     }
 
@@ -138,7 +138,7 @@ public class TokensManager {
             if (newAmount == 0) player.setItemInHand(null);
             else itemStack.setAmount(newAmount);
             giveTokens(player, value * amount, false);
-            PlayerUtils.sendMessage(player, "&e&l(!) &eYou redeemed &f%tokens% &etoken(s)"
+            PlayerUtils.sendMessage(player, "&e&l(!) &eYou redeemed &6⛁%tokens%&e!"
                     .replace("%tokens%", String.valueOf(value * amount)));
         }
     }
@@ -148,11 +148,15 @@ public class TokensManager {
         return this.tokensCache.getOrDefault(player.getUniqueId(), 0L);
     }
 
-    private ItemStack createTokenItem(long value, int amount) {
+    private ItemStack createTokenItem(Player player, long value, int amount) {
         ItemStack itemStack = ItemStackBuilder.of(Material.MAGMA_CREAM)
                 .amount(amount)
-                .name("&e&l%tokens% TOKENS".replace("%tokens%", String.valueOf(value)))
-                .lore(Arrays.asList("&7Right-Click to Redeem"))
+                .name("&8»&e»&6» &6&l⛁%tokens% &6«&e«&8«".replace("%tokens%", String.valueOf(value)))
+                .lore(Arrays.asList(
+                        "&eWithdrawn by: &6%player%".replaceAll("%player%", player.getName()),
+                        " ",
+                        "&7&o(( &f&oRight-Click &7&oto redeem ))"
+                ))
                 .enchant(Enchantment.DURABILITY)
                 .flag(ItemFlag.HIDE_ENCHANTS).build();
         NBTItem nbtItem = new NBTItem(itemStack);
@@ -195,10 +199,10 @@ public class TokensManager {
     public void sendInfoMessage(CommandSender sender, OfflinePlayer player) {
         Schedulers.async().run(() -> {
             if (sender == player) {
-                PlayerUtils.sendMessage(sender, "&eYour Tokens: %tokens%"
+                PlayerUtils.sendMessage(sender, "&eYour Tokens: &6⛁%tokens%"
                         .replace("%tokens%", String.valueOf(getPlayerTokens(player))));
             } else {
-                PlayerUtils.sendMessage(sender, "&e%player%'s Tokens: %tokens%"
+                PlayerUtils.sendMessage(sender, "&e%player%'s Tokens: &6⛁%tokens%"
                         .replace("%tokens%", String.valueOf(getPlayerTokens(player)))
                         .replace("%player%", player.getName()));
             }

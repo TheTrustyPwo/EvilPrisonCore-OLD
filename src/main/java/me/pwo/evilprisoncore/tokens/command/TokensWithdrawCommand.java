@@ -23,7 +23,7 @@ public class TokensWithdrawCommand extends TokensCommand {
                     return false;
                 }
                 this.tokens.getTokensManager().withdrawTokens(player, value, amount);
-                PlayerUtils.sendMessage(player, "&aYou have withdrawn &e%value%x %amount% Tokens!"
+                PlayerUtils.sendMessage(player, "&6&lTOKENS &8» &eYou have withdrawn &6%amount% x ⛁%value%&e!"
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%value%", String.valueOf(value)));
                 return true;

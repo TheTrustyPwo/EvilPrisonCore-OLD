@@ -25,11 +25,11 @@ public class TokensGiveCommand extends TokensCommand {
                 }
                 this.tokens.getTokensManager().giveTokens(player, amount,applyMultiplier);
                 if (sender instanceof ConsoleCommandSender && player.isOnline())
-                    PlayerUtils.sendMessage(player.getPlayer(), "&e&lTOKENS &8&7You have received &f%tokens% tokens&7."
+                    PlayerUtils.sendMessage(player.getPlayer(), "&6&lTOKENS &8» &eYou have received &6⛁%tokens%&e."
                             .replace("%tokens%", String.valueOf(amount))
                             .replace("%player%", sender.getName()));
                 if (!(sender instanceof ConsoleCommandSender)) {
-                    PlayerUtils.sendMessage(sender, "&aSuccessfully given &e%tokens% &atokens to &e%player%."
+                    PlayerUtils.sendMessage(sender, "&aSuccessfully given &6⛁%tokens% &ato &6%player%."
                             .replace("%player%", player.getName())
                             .replace("%tokens%", String.valueOf(amount)));
                 }
