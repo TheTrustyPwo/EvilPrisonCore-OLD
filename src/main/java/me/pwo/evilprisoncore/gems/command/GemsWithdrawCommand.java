@@ -23,9 +23,9 @@ public class GemsWithdrawCommand extends GemsCommand {
                     return false;
                 }
                 this.gems.getGemsManager().withdrawGems(player, value, amount);
-                PlayerUtils.sendMessage(player, "&aYou have withdrawn &e%value%x %amount% Gems!"
+                PlayerUtils.sendMessage(player, "&eYou have withdrawn &b%amount% x ♦%value%&e!"
                         .replace("%amount%", String.valueOf(amount))
-                        .replace("%value%", String.valueOf(value)));
+                        .replace("%value%", String.valueOf(value)), true);
                 return true;
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class TokensManager {
-    private static final String tokenItemNBTTagIdentifier = "EvilPrison-Tokens-Item-Value";
+    private static final String TOKEN_ITEM_NBT_TAG_IDENTIFIER = "EvilPrison-Tokens-Item-Value";
     private final Tokens tokens;
     private static final List<String> tokensTopFormat = Arrays.asList(
             "&e&m-------&f&m-------&e&m--------&f&m--------&e&m--------&f&m-------&e&m-------",
@@ -131,8 +131,8 @@ public class TokensManager {
 
     public void redeemTokens(Player player, ItemStack itemStack, boolean claimAll) {
         NBTItem nbtItem = new NBTItem(itemStack);
-        if (nbtItem.hasKey(tokenItemNBTTagIdentifier)) {
-            long value = nbtItem.getLong(tokenItemNBTTagIdentifier);
+        if (nbtItem.hasKey(TOKEN_ITEM_NBT_TAG_IDENTIFIER)) {
+            long value = nbtItem.getLong(TOKEN_ITEM_NBT_TAG_IDENTIFIER);
             int amount = claimAll ? itemStack.getAmount() : 1;
             int newAmount = itemStack.getAmount() - amount;
             if (newAmount == 0) player.setItemInHand(null);
@@ -160,7 +160,7 @@ public class TokensManager {
                 .enchant(Enchantment.DURABILITY)
                 .flag(ItemFlag.HIDE_ENCHANTS).build();
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setLong(tokenItemNBTTagIdentifier, value);
+        nbtItem.setLong(TOKEN_ITEM_NBT_TAG_IDENTIFIER, value);
         return nbtItem.getItem();
     }
 

@@ -25,13 +25,13 @@ public class GemsGiveCommand extends GemsCommand {
                 }
                 this.gems.getGemsManager().giveGems(player, amount,applyMultiplier);
                 if (sender instanceof ConsoleCommandSender && player.isOnline())
-                    PlayerUtils.sendMessage(player.getPlayer(), "&e&lGEMS &8&7You have received &f%gems% gems&7"
+                    PlayerUtils.sendMessage(player.getPlayer(), "&eYou have received &b♦%gems%&e."
                             .replace("%gems%", String.valueOf(amount))
-                            .replace("%player%", sender.getName()));
+                            .replace("%player%", sender.getName()), true);
                 if (!(sender instanceof ConsoleCommandSender)) {
-                    PlayerUtils.sendMessage(sender, "&aSuccessfully given &e%gems% &agems to &e%player%."
+                    PlayerUtils.sendMessage(sender, "&aSuccessfully given &b♦%gems% &ato &6%player%&a."
                             .replace("%player%", player.getName())
-                            .replace("%gems%", String.valueOf(amount)));
+                            .replace("%gems%", String.valueOf(amount)), true);
                 }
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

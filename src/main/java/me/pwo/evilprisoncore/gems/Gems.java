@@ -68,7 +68,7 @@ public class Gems implements EvilPrisonModules {
     private void registerEvents() {
         Events.subscribe(PlayerInteractEvent.class, EventPriority.LOWEST)
                 .filter(e -> e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR)
-                .filter(e -> e.getItem() != null && e.getItem().getType() == Material.MAGMA_CREAM)
+                .filter(e -> e.getItem() != null && e.getItem().getType() == Material.EMERALD)
                 .filter(e -> e.getHand() != EquipmentSlot.OFF_HAND)
                 .handler(e -> {
                     if (e.getItem().hasItemMeta()) {
@@ -98,7 +98,7 @@ public class Gems implements EvilPrisonModules {
                         if (gemsCommand.canExecute(context.sender())) {
                             gemsCommand.execute(context.sender(), context.args().subList(1, context.args().size()));
                         } else {
-                            PlayerUtils.sendMessage(context.sender(), "&c&l(!) &fYou do not have permission to do that!");
+                            PlayerUtils.sendMessage(context.sender(), "&c&l(!) &cNo Permission");
                         }
                     } else {
                         OfflinePlayer offlinePlayer = Players.getOfflineNullable(context.rawArg(0));

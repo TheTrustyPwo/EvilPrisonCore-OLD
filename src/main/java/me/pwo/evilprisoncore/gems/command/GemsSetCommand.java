@@ -22,9 +22,9 @@ public class GemsSetCommand extends GemsCommand {
                     return false;
                 }
                 this.gems.getGemsManager().setGems(player, amount);
-                PlayerUtils.sendMessage(sender, "&aSuccessfully given &e%gems% &agems to &e%player%."
+                PlayerUtils.sendMessage(sender, "&aSuccessfully set &6%player%'s &agems to &b♦%gems%&a."
                         .replaceAll("%player%", player.getName())
-                        .replaceAll("%gems%", String.valueOf(amount)));
+                        .replaceAll("%gems%", String.valueOf(amount)), true);
                 return true;
             } catch (Exception exception) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

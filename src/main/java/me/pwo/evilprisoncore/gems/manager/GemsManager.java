@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("deprecation")
 public class GemsManager {
-    private static final String tokenItemNBTTagIdentifier = "EvilPrison-Gems-Item-Value";
+    private static final String GEM_ITEM_NBT_TAG_IDENTIFIER = "EvilPrison-Gems-Item-Value";
     private final Gems gems;
     private static final List<String> gemsTopFormat = Arrays.asList(
             "&e&m-------&f&m-------&e&m--------&f&m--------&e&m--------&f&m-------&e&m-------",
@@ -125,20 +125,20 @@ public class GemsManager {
         Schedulers.async().run(() -> {
             long total = value * amount;
             removeGems(player, total);
-            player.getInventory().addItem(createTokenItem(value, amount));
+            player.getInventory().addItem(createGemItem(player, value, amount));
         });
     }
 
     public void redeemGems(Player player, ItemStack itemStack, boolean claimAll) {
         NBTItem nbtItem = new NBTItem(itemStack);
-        if (nbtItem.hasKey(tokenItemNBTTagIdentifier)) {
-            long value = nbtItem.getLong(tokenItemNBTTagIdentifier);
+        if (nbtItem.hasKey(GEM_ITEM_NBT_TAG_IDENTIFIER)) {
+            long value = nbtItem.getLong(GEM_ITEM_NBT_TAG_IDENTIFIER);
             int amount = itemStack.getAmount();
             int newAmount = claimAll ? 0 : (itemStack.getAmount() == 1 ? 0 : itemStack.getAmount() - 1);
             if (newAmount == 0) player.setItemInHand(null);
             else itemStack.setAmount(newAmount);
             giveGems(player, value * amount, false);
-            PlayerUtils.sendMessage(player, "&e&l(!) &eYou redeemed &f%gems% &etoken(s)"
+            PlayerUtils.sendMessage(player, "&e&l(!) &eYou redeemed &b♦%gems%&e!"
                     .replace("%gems%", String.valueOf(value * amount)));
         }
     }
@@ -148,15 +148,19 @@ public class GemsManager {
         return this.gemsCache.getOrDefault(player.getUniqueId(), 0L);
     }
 
-    private ItemStack createTokenItem(long value, int amount) {
-        ItemStack itemStack = ItemStackBuilder.of(Material.MAGMA_CREAM)
+    private ItemStack createGemItem(Player player, long value, int amount) {
+        ItemStack itemStack = ItemStackBuilder.of(Material.EMERALD)
                 .amount(amount)
-                .name("&e&l%gems% GEMS".replace("%gems%", String.valueOf(value)))
-                .lore(Arrays.asList("&7Right-Click to Redeem"))
+                .name("&8»&e»&6» &b&l♦%gems% &6«&e«&8«".replace("%gems%", String.valueOf(value)))
+                .lore(Arrays.asList(
+                        "&eWithdrawn by: &6%player%".replaceAll("%player%", player.getName()),
+                        " ",
+                        "&7&o(( &f&oRight-Click &7&oto redeem ))"
+                ))
                 .enchant(Enchantment.DURABILITY)
                 .flag(ItemFlag.HIDE_ENCHANTS).build();
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setLong(tokenItemNBTTagIdentifier, value);
+        nbtItem.setLong(GEM_ITEM_NBT_TAG_IDENTIFIER, value);
         return nbtItem.getItem();
     }
 

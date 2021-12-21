@@ -22,9 +22,9 @@ public class TokensSetCommand extends TokensCommand {
                     return false;
                 }
                 this.tokens.getTokensManager().setTokens(player, amount);
-                PlayerUtils.sendMessage(sender, "&aSuccessfully set &6%player%'s &atokens to &6⛁%tokens%."
+                PlayerUtils.sendMessage(sender, "&aSuccessfully set &6%player%'s &atokens to &6⛁%tokens%&a."
                         .replaceAll("%player%", player.getName())
-                        .replaceAll("%tokens%", String.valueOf(amount)));
+                        .replaceAll("%tokens%", String.valueOf(amount)), true);
                 return true;
             } catch (Exception exception) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

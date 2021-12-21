@@ -25,13 +25,13 @@ public class TokensGiveCommand extends TokensCommand {
                 }
                 this.tokens.getTokensManager().giveTokens(player, amount,applyMultiplier);
                 if (sender instanceof ConsoleCommandSender && player.isOnline())
-                    PlayerUtils.sendMessage(player.getPlayer(), "&6&lTOKENS &8» &eYou have received &6⛁%tokens%&e."
+                    PlayerUtils.sendMessage(player.getPlayer(), "&eYou have received &6⛁%tokens%&e."
                             .replace("%tokens%", String.valueOf(amount))
-                            .replace("%player%", sender.getName()));
+                            .replace("%player%", sender.getName()), true);
                 if (!(sender instanceof ConsoleCommandSender)) {
-                    PlayerUtils.sendMessage(sender, "&aSuccessfully given &6⛁%tokens% &ato &6%player%."
+                    PlayerUtils.sendMessage(sender, "&aSuccessfully given &6⛁%tokens% &ato &6%player%&a."
                             .replace("%player%", player.getName())
-                            .replace("%tokens%", String.valueOf(amount)));
+                            .replace("%tokens%", String.valueOf(amount)), true);
                 }
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

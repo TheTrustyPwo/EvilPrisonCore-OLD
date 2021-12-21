@@ -98,7 +98,7 @@ public class Tokens implements EvilPrisonModules {
                         if (tokensCommand.canExecute(context.sender())) {
                             tokensCommand.execute(context.sender(), context.args().subList(1, context.args().size()));
                         } else {
-                            PlayerUtils.sendMessage(context.sender(), "&c&l(!) &fYou do not have permission to do that!");
+                            PlayerUtils.sendMessage(context.sender(), "&c&l(!) &cNo Permission");
                         }
                     } else {
                         OfflinePlayer offlinePlayer = Players.getOfflineNullable(context.rawArg(0));

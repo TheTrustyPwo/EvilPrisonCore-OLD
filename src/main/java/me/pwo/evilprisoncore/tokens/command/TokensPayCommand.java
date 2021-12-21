@@ -31,13 +31,13 @@ public class TokensPayCommand extends TokensCommand {
                 }
                 this.tokens.getTokensManager().removeTokens(player, amount);
                 this.tokens.getTokensManager().giveTokens(receiver, amount, false);
-                PlayerUtils.sendMessage(player, "&6&lTOKENS &8» &eYou have sent &6⛁%tokens% &eto &6%player%&e."
+                PlayerUtils.sendMessage(player, "&eYou have sent &6⛁%tokens% &eto &6%player%&e."
                         .replaceAll("%player%", receiver.getName())
-                        .replaceAll("%tokens%", String.valueOf(amount)));
+                        .replaceAll("%tokens%", String.valueOf(amount)), true);
                 if (receiver.isOnline())
-                    PlayerUtils.sendMessage(receiver.getPlayer(), "&6&lTOKENS &8» &eYou received &6⛁%tokens% &efrom &6%player%&e."
+                    PlayerUtils.sendMessage(receiver.getPlayer(), "&eYou received &6⛁%tokens% &efrom &6%player%&e."
                         .replaceAll("%player%", player.getName())
-                        .replaceAll("%tokens%", String.valueOf(amount)));
+                        .replaceAll("%tokens%", String.valueOf(amount)), true);
                 return true;
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

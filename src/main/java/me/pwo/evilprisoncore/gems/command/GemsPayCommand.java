@@ -31,6 +31,13 @@ public class GemsPayCommand extends GemsCommand {
                 }
                 this.gems.getGemsManager().removeGems(player, amount);
                 this.gems.getGemsManager().giveGems(receiver, amount, false);
+                PlayerUtils.sendMessage(player, "&eYou have sent &b♦%gems% &eto &6%player%&e."
+                        .replaceAll("%player%", receiver.getName())
+                        .replaceAll("%gems%", String.valueOf(amount)), true);
+                if (receiver.isOnline())
+                    PlayerUtils.sendMessage(receiver.getPlayer(), "&eYou received &b♦%gems% &efrom &6%player%&e."
+                            .replaceAll("%player%", player.getName())
+                            .replaceAll("%gems%", String.valueOf(amount)), true);
                 return true;
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

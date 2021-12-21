@@ -8,23 +8,27 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PlayerUtils {
-    public static void sendMessage(CommandSender paramCommandSender, String paramString) {
-        if (paramCommandSender instanceof Player && !((Player)paramCommandSender).isOnline())
-            return;
-        if (StringUtils.isBlank(paramString))
-            return;
-        paramCommandSender.sendMessage(Text.colorize(paramString).split("%nl%"));
+    public static void sendMessage(CommandSender sender, String message) {
+        if (sender instanceof Player && !((Player)sender).isOnline()) return;
+        if (StringUtils.isBlank(message)) return;
+        sender.sendMessage(Text.colorize(message));
     }
 
-    public static void sendMessage(CommandSender paramCommandSender, List<String> paramList) {
-        if (paramCommandSender instanceof Player && !((Player)paramCommandSender).isOnline())
-            return;
-        for (String str : paramList) {
-            if (StringUtils.isBlank(str))
-                return;
-            paramCommandSender.sendMessage(Text.colorize(str));
+    public static void sendMessage(CommandSender sender, String message, boolean prefix) {
+        if (sender instanceof Player && !((Player)sender).isOnline()) return;
+        if (StringUtils.isBlank(message)) return;
+        sender.sendMessage(prefix ? Text.colorize("&6&lE&e&lKD &8» ") + Text.colorize(message) : Text.colorize(message));
+    }
+
+    public static void sendMessage(CommandSender sender, List<String> messages, boolean prefix) {
+        if (sender instanceof Player && !((Player)sender).isOnline()) return;
+        for (String str : messages) {
+            if (StringUtils.isBlank(str)) return;
+            if (prefix) sender.sendMessage(Text.colorize("&6&lE&e&lKD &8» ") + Text.colorize(str));
+            else sender.sendMessage(Text.colorize(str));
         }
     }
 

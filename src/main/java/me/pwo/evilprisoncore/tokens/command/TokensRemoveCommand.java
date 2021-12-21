@@ -22,9 +22,9 @@ public class TokensRemoveCommand extends TokensCommand {
                     return false;
                 }
                 this.tokens.getTokensManager().removeTokens(player, amount);
-                PlayerUtils.sendMessage(sender, "&aSuccessfully removed &6⛁%tokens% &afrom &6%player%."
+                PlayerUtils.sendMessage(sender, "&aSuccessfully removed &6⛁%tokens% &afrom &6%player%&a."
                         .replace("%player%", player.getName())
-                        .replace("%tokens%", String.valueOf(amount)));
+                        .replace("%tokens%", String.valueOf(amount)), true);
                 return true;
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");

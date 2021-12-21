@@ -22,9 +22,9 @@ public class GemsRemoveCommand extends GemsCommand {
                     return false;
                 }
                 this.gems.getGemsManager().removeGems(player, amount);
-                PlayerUtils.sendMessage(sender, "&aSuccessfully removed &e%gems% &agems from &e%player%."
+                PlayerUtils.sendMessage(sender, "&aSuccessfully removed &b♦%gems% &afrom &6%player%&a."
                         .replace("%player%", player.getName())
-                        .replace("%gems%", String.valueOf(amount)));
+                        .replace("%gems%", String.valueOf(amount)), true);
                 return true;
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");
