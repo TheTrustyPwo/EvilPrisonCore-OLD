@@ -268,40 +268,6 @@ public abstract class SQLDatabase extends Database {
         return null;
     }
 
-    public List<UUID> getGangMembers(UUID gangId) {
-        List<UUID> list = new ArrayList<>();
-        try(PreparedStatement preparedStatement = this.hikari.getConnection().prepareStatement(
-                "SELECT Player FROM EvilPrison_Gangs_Members WHERE GangID=? ")) {
-            preparedStatement.setString(1, gangId.toString());
-            try(ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    list.add(UUID.fromString(resultSet.getString("Player")));
-                }
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
-        return list;
-    }
-
-    @Override
-    public List<Gang> getAllGangs() {
-        List<Gang> list = new ArrayList<>();
-        try(ResultSet resultSet = this.hikari.getConnection().prepareStatement(
-                "SELECT * FROM EvilPrison_Gangs", 1004, 1008).executeQuery()) {
-            while (resultSet.next()) {
-                UUID gangId = UUID.fromString(resultSet.getString("ID"))
-                String gangName = resultSet.getString("Name");
-                UUID gangOwner = UUID.fromString(resultSet.getString("Owner"));
-                long gangTrophies = resultSet.getLong("Trophies");
-                String announcement = resultSet.getString("Announcement");
-                List<UUID> gangMembers = getGangMembers(gangId);
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
-    }
-
     public abstract void connect();
 
     public abstract void runSQLUpdates();

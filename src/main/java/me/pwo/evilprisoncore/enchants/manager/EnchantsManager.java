@@ -120,12 +120,13 @@ public class EnchantsManager {
         return nbtItem.getLong(BLOCK_BROKEN_NBT_IDENTIFIER);
     }
 
-    public synchronized void addBlocksBrokenToItem(ItemStack itemStack, int amount) {
+    public synchronized void addBlocksBrokenToItem(Player player, int amount) {
         if (amount == 0) return;
-        NBTItem nbtItem = new NBTItem(itemStack);
+        NBTItem nbtItem = new NBTItem(player.getItemInHand());
         nbtItem.setLong(BLOCK_BROKEN_NBT_IDENTIFIER,
                 nbtItem.hasKey(BLOCK_BROKEN_NBT_IDENTIFIER) ? nbtItem.getLong(BLOCK_BROKEN_NBT_IDENTIFIER) + amount : 0L);
-        applyLoreToPickaxe(itemStack);
+        player.setItemInHand(nbtItem.getItem());
+        applyLoreToPickaxe(player.getItemInHand());
     }
 
     public boolean hasEnchant(Player paramPlayer, int paramInt) {
@@ -244,7 +245,7 @@ public class EnchantsManager {
         enchantment.onUnequip(enchantGUI.getPlayer(), enchantGUI.getPickAxe(), currentLevel);
         enchantment.onEquip(enchantGUI.getPlayer(), enchantGUI.getPickAxe(), currentLevel + levelsToBuy);
         enchantGUI.getPlayer().getInventory().setItem(enchantGUI.getPickaxePlayerInventorySlot(), enchantGUI.getPickAxe());
-        PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&e&lENCHANTS &8» &f7You purchased &6%amount% %enchant% &flevels for &6%tokens% tokens."
+        PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&6&lENCHANTS &8» &fYou purchased &6%amount% %enchant% &flevels for &6⛁%tokens%&f."
                 .replace("%amount%", String.valueOf(levelsToBuy))
                 .replace("%enchant%", enchantment.getName())
                 .replace("%tokens%", String.format("%,d", cost)));

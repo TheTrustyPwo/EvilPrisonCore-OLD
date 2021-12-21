@@ -104,12 +104,12 @@ public class Gems implements EvilPrisonModules {
                         OfflinePlayer offlinePlayer = Players.getOfflineNullable(context.rawArg(0));
                         this.gemsManager.sendInfoMessage(context.sender(), offlinePlayer);
                     }
-                }).registerAndBind(this.plugin, "gems", "token");
+                }).registerAndBind(this.plugin, "gems", "gem");
         Commands.create()
                 .handler(paramCommandContext -> {
                     if (paramCommandContext.args().size() == 0)
                         this.gemsManager.sendGemsTop(paramCommandContext.sender());
-                }).registerAndBind(this.plugin, "gems", "tokentop");
+                }).registerAndBind(this.plugin, "gemstop", "gemtop");
     }
 
     public String getName() {

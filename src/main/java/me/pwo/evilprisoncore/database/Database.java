@@ -60,14 +60,4 @@ public abstract class Database {
     public abstract void unbanPlayerPrivateMine(OfflinePlayer owner, OfflinePlayer player);
     
     public abstract List<UUID> getBannedPlayersPrivateMine(OfflinePlayer owner);
-    
-    public abstract void getAccessPlayersPrivateMine(OfflinePlayer owner);
-
-    public abstract List<Gang> getAllGangs();
-
-    public abstract void updateGang(Gang gang);
-
-    public abstract void deleteGang(Gang gang);
-
-    public abstract void createGang(Gang gang);
 }

@@ -98,12 +98,11 @@ public class Enchants implements EvilPrisonModules {
                     (new EnchantGUI(e.getPlayer(), itemStack, i)).open();
                 }).bindWith(this.plugin);
         Events.subscribe(BlockBreakEvent.class, EventPriority.HIGHEST)
-                .filter(EventFilters.ignoreCancelled())
-                .filter(paramBlockBreakEvent -> (paramBlockBreakEvent.getPlayer().getGameMode() == GameMode.SURVIVAL && !paramBlockBreakEvent.isCancelled() && paramBlockBreakEvent.getPlayer().getItemInHand() != null && getPlugin().isPickaxeSupported(paramBlockBreakEvent.getPlayer().getItemInHand().getType())))
-                .filter(paramBlockBreakEvent -> (this.enchantsManager.isAllowEnchantsOutside() || WorldGuardWrapper.getInstance().getRegions(paramBlockBreakEvent.getBlock().getLocation()).stream().anyMatch((region) -> region.getId().toLowerCase().startsWith("mine-"))))
-                .handler(paramBlockBreakEvent -> {
-                    this.enchantsManager.addBlocksBrokenToItem(paramBlockBreakEvent.getPlayer().getItemInHand(), 1);
-                    this.enchantsManager.handleBlockBreak(paramBlockBreakEvent, paramBlockBreakEvent.getPlayer().getItemInHand());
+                .filter(e -> (e.getPlayer().getGameMode() == GameMode.SURVIVAL && !e.isCancelled() && e.getPlayer().getItemInHand() != null && getPlugin().isPickaxeSupported(e.getPlayer().getItemInHand().getType())))
+                .filter(e -> (WorldGuardWrapper.getInstance().getRegions(e.getBlock().getLocation()).stream().anyMatch((region) -> region.getId().toLowerCase().startsWith("mine-"))))
+                .handler(e -> {
+                    this.enchantsManager.addBlocksBrokenToItem(e.getPlayer(), 1);
+                    this.enchantsManager.handleBlockBreak(e, e.getPlayer().getItemInHand());
                 }).bindWith(this.plugin);
         Events.subscribe(BlockBreakEvent.class, EventPriority.LOWEST)
                 .filter(paramBlockBreakEvent -> (paramBlockBreakEvent.getPlayer().getGameMode() == GameMode.SURVIVAL && !paramBlockBreakEvent.isCancelled() && paramBlockBreakEvent.getPlayer().getItemInHand() != null && getPlugin().isPickaxeSupported(paramBlockBreakEvent.getPlayer().getItemInHand().getType())))

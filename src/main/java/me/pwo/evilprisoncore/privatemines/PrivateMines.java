@@ -119,12 +119,6 @@ public class PrivateMines implements EvilPrisonModules {
                     });
                 }).bindWith(this.plugin);
     }
-
-    public Mine locatePlayer(Player player) {
-        for (Mine mine : this.mines.values()) {
-        }
-    }
-
     @Override
     public void disable() {
         this.enabled = false;

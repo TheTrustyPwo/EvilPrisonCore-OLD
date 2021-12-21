@@ -133,8 +133,8 @@ public class TokensManager {
         NBTItem nbtItem = new NBTItem(itemStack);
         if (nbtItem.hasKey(tokenItemNBTTagIdentifier)) {
             long value = nbtItem.getLong(tokenItemNBTTagIdentifier);
-            int amount = itemStack.getAmount();
-            int newAmount = claimAll ? 0 : (itemStack.getAmount() == 1 ? 0 : itemStack.getAmount() - 1);
+            int amount = claimAll ? itemStack.getAmount() : 1;
+            int newAmount = itemStack.getAmount() - amount;
             if (newAmount == 0) player.setItemInHand(null);
             else itemStack.setAmount(newAmount);
             giveTokens(player, value * amount, false);

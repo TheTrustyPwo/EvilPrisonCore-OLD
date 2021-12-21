@@ -7,12 +7,15 @@ import me.pwo.evilprisoncore.database.Database;
 import me.pwo.evilprisoncore.database.implementations.MySQLDatabase;
 import me.pwo.evilprisoncore.database.implementations.SQLiteDatabase;
 import me.pwo.evilprisoncore.enchants.Enchants;
+import me.pwo.evilprisoncore.gems.Gems;
+import me.pwo.evilprisoncore.menu.Menu;
 import me.pwo.evilprisoncore.pickaxe.Pickaxe;
 import me.pwo.evilprisoncore.placeholders.EvilPrisonPAPIPlaceholders;
 import me.pwo.evilprisoncore.ranks.Ranks;
 import me.pwo.evilprisoncore.tokens.Tokens;
 import me.pwo.evilprisoncore.utils.FileUtils;
 import me.pwo.evilprisoncore.utils.MinecraftVersion;
+import me.pwo.evilprisoncore.utils.SkullUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,11 +35,13 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private List<Material> pickaxesSupported;
     private Economy economy;
 
+    private AutoMiner autoMiner;
     private Tokens tokens;
+    private Gems gems;
     private Ranks ranks;
     private Enchants enchants;
     private Pickaxe pickaxe;
-    private AutoMiner autoMiner;
+    private Menu menu;
 
     public LinkedHashMap<String, EvilPrisonModules> getLoadedModules() {
         return this.loadedModules;
@@ -82,6 +87,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
 
     protected void enable() {
         MinecraftVersion.init();
+        SkullUtils.init();
         instance = this;
         this.loadedModules = new LinkedHashMap<>();
         this.fileUtils = new FileUtils(this);
@@ -102,26 +108,26 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
         }
         this.pickaxesSupported = Collections.singletonList(Material.DIAMOND_PICKAXE);
+        this.autoMiner = new AutoMiner(this);
         this.tokens = new Tokens(this);
+        this.gems = new Gems(this);
         this.ranks = new Ranks(this);
         this.enchants = new Enchants(this);
         this.pickaxe = new Pickaxe(this);
-        this.autoMiner = new AutoMiner(this);
+        this.menu = new Menu(this);
         if (!setupEconomy()) {
             getLogger().warning("Economy provider for Vault not found! Economy provider is strictly required. Disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         getLogger().info("Economy provider for Vault found - " + getEconomy().getName());
-        if (getConfig().getBoolean("modules.tokens"))
-            loadModule(this.tokens);
-        if (getConfig().getBoolean("modules.ranks"))
-            loadModule(this.ranks);
-        if (getConfig().getBoolean("modules.enchants"))
-            loadModule(this.enchants);
-        loadModule(pickaxe);
-        if (getConfig().getBoolean("modules.autominer"))
-            loadModule(this.autoMiner);
+        loadModule(this.autoMiner);
+        loadModule(this.tokens);
+        loadModule(this.gems);
+        loadModule(this.ranks);
+        loadModule(this.enchants);
+        loadModule(this.pickaxe);
+        loadModule(this.menu);
         registerEvents();
         registerCommands();
         registerPlaceholders();

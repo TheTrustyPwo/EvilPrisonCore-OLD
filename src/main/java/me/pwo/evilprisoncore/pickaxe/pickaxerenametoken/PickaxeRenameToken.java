@@ -84,7 +84,7 @@ public class PickaxeRenameToken implements EvilPrisonModules {
                                 PlayerUtils.sendMessage(e.getPlayer(), "&aRename successful!");
                                 ItemStackBuilder.of(pickaxe).name(event.getMessage());
                             }).bindWith(this.plugin);
-                });
+                }).bindWith(this.plugin);
     }
 
     public ItemStack createRenameTokenItem(int amount) {
@@ -92,7 +92,7 @@ public class PickaxeRenameToken implements EvilPrisonModules {
                 .name("&6&lRename Token &f&o(Right Click)")
                 .amount(amount).build();
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setUUID(RENAME_TOKEN_NBT_IDENTIFIER, UUID.randomUUID());
+        nbtItem.setString(RENAME_TOKEN_NBT_IDENTIFIER, UUID.randomUUID().toString());
         nbtItem.applyNBT(itemStack);
         return itemStack;
     }
@@ -103,9 +103,7 @@ public class PickaxeRenameToken implements EvilPrisonModules {
     }
 
     @Override
-    public void reload() {
-
-    }
+    public void reload() {}
 
     @Override
     public boolean isEnabled() {
