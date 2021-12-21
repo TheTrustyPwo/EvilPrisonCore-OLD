@@ -130,6 +130,45 @@ public abstract class SQLDatabase extends Database {
     }
 
     @Override
+    public long getPlayerCredits(OfflinePlayer paramOfflinePlayer) {
+        try {
+            Connection connection = this.hikari.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM EvilPrison_Credits WHERE UUID=?");
+            preparedStatement.setString(1, paramOfflinePlayer.getUniqueId().toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+                return resultSet.getLong("Credits");
+        } catch (SQLException sQLException) {
+            sQLException.printStackTrace();
+        }
+        return 0L;
+    }
+
+    @Override
+    public void updatePlayerCredits(OfflinePlayer paramOfflinePlayer, long paramLong) {
+        executeAsync("UPDATE EvilPrison_Credits SET Credits=? WHERE UUID=?", paramLong, paramOfflinePlayer.getUniqueId().toString());
+    }
+
+    @Override
+    public Map<UUID, Long> getTop10Credits() {
+        LinkedHashMap<UUID, Long> linkedHashMap = new LinkedHashMap<>();
+        try {
+            Connection connection = this.hikari.getConnection();
+            ResultSet resultSet = connection.prepareStatement("SELECT * FROM EvilPrison_Credits ORDER BY Gems DESC LIMIT 10").executeQuery();
+            while (resultSet.next())
+                linkedHashMap.put(UUID.fromString(resultSet.getString("UUID")), resultSet.getLong("Credits"));
+        } catch (SQLException sQLException) {
+            sQLException.printStackTrace();
+        }
+        return linkedHashMap;
+    }
+
+    @Override
+    public void addIntoCredits(OfflinePlayer paramOfflinePlayer) {
+        execute("INSERT IGNORE INTO EvilPrison_Credits VALUES(?,?)", paramOfflinePlayer.getUniqueId().toString(), 0);
+    }
+
+    @Override
     public long getPlayerGems(OfflinePlayer paramOfflinePlayer) {
         try {
             Connection connection = this.hikari.getConnection();

@@ -63,8 +63,7 @@ public class PickaxeLevels implements EvilPrisonModules {
     private void loadPickaxeLevels() {
         this.pickaxeLevels = new LinkedHashMap<>();
         ConfigurationSection configurationSection = getConfig().getConfigurationSection("levels");
-        if (configurationSection == null)
-            return;
+        if (configurationSection == null) return;
         for (String str1 : configurationSection.getKeys(false)) {
             int level = Integer.parseInt(str1);
             long blocksRequired = getConfig().getLong("levels." + str1 + ".blocks_required");

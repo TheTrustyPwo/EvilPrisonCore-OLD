@@ -3,6 +3,7 @@ package me.pwo.evilprisoncore;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.autominer.AutoMiner;
+import me.pwo.evilprisoncore.credits.Credits;
 import me.pwo.evilprisoncore.database.Database;
 import me.pwo.evilprisoncore.database.implementations.MySQLDatabase;
 import me.pwo.evilprisoncore.database.implementations.SQLiteDatabase;
@@ -21,6 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,6 +40,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private AutoMiner autoMiner;
     private Tokens tokens;
     private Gems gems;
+    private Credits credits;
     private Ranks ranks;
     private Enchants enchants;
     private Pickaxe pickaxe;
@@ -63,6 +66,14 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
 
     public Tokens getTokens() {
         return this.tokens;
+    }
+
+    public Gems getGems() {
+        return gems;
+    }
+
+    public Credits getCredits() {
+        return credits;
     }
 
     public Ranks getRanks() {
@@ -111,6 +122,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         this.autoMiner = new AutoMiner(this);
         this.tokens = new Tokens(this);
         this.gems = new Gems(this);
+        this.credits = new Credits(this);
         this.ranks = new Ranks(this);
         this.enchants = new Enchants(this);
         this.pickaxe = new Pickaxe(this);
@@ -124,6 +136,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         loadModule(this.autoMiner);
         loadModule(this.tokens);
         loadModule(this.gems);
+        loadModule(this.credits);
         loadModule(this.ranks);
         loadModule(this.enchants);
         loadModule(this.pickaxe);

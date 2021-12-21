@@ -13,15 +13,20 @@ import me.pwo.evilprisoncore.pickaxe.pickaxerenametoken.command.PickaxeRenameTok
 import me.pwo.evilprisoncore.pickaxe.pickaxerenametoken.command.PickaxeRenameTokenGiveCommand;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class PickaxeRenameToken implements EvilPrisonModules {
     private static final String RENAME_TOKEN_NBT_IDENTIFIER = "EvilPrison-Pickaxe-RenameToken";
     private static PickaxeRenameToken instance;
@@ -72,16 +77,21 @@ public class PickaxeRenameToken implements EvilPrisonModules {
     }
 
     private void registerEvents() {
-        Events.subscribe(PlayerInteractEvent.class)
-                .filter(e -> e.getItem() == createRenameTokenItem(e.getItem().getAmount()))
+        Events.subscribe(PlayerInteractEvent.class, EventPriority.LOWEST)
+                .filter(e -> e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR)
+                .filter(e -> e.getPlayer().getItemInHand().isSimilar(createRenameTokenItem(e.getItem().getAmount())))
+                .filter(e -> e.getHand() != EquipmentSlot.OFF_HAND)
                 .handler(e -> {
+                    if (e.getPlayer().getItemInHand().getAmount() - 1 == 0) e.getPlayer().setItemInHand(null);
+                    else e.getPlayer().getItemInHand().setAmount(e.getPlayer().getItemInHand().getAmount() - 1);
                     ItemStack pickaxe = Enchants.getInstance().getEnchantsManager().findPickaxe(e.getPlayer());
-                    PlayerUtils.sendMessage(e.getPlayer(), "&aEnter the new name for your pickaxe.");
+                    PlayerUtils.sendMessage(e.getPlayer(), "&aEnter the new name for your pickaxe! &e(Supports color codes: &4&k;;&6&l&n&oEVIL&4&k;;&r&e)", true);
                     Events.subscribe(AsyncPlayerChatEvent.class)
                             .expireAfter(1)
                             .filter(event -> event.getPlayer() == e.getPlayer())
                             .handler(event -> {
-                                PlayerUtils.sendMessage(e.getPlayer(), "&aRename successful!");
+                                e.setCancelled(true);
+                                PlayerUtils.sendMessage(e.getPlayer(), "&aRename successful!", true);
                                 ItemStackBuilder.of(pickaxe).name(event.getMessage());
                             }).bindWith(this.plugin);
                 }).bindWith(this.plugin);
@@ -90,9 +100,11 @@ public class PickaxeRenameToken implements EvilPrisonModules {
     public ItemStack createRenameTokenItem(int amount) {
         ItemStack itemStack = ItemStackBuilder.of(Material.NAME_TAG)
                 .name("&6&lRename Token &f&o(Right Click)")
-                .amount(amount).build();
+                .amount(amount)
+                .enchant(Enchantment.DURABILITY)
+                .flag(ItemFlag.HIDE_ENCHANTS).build();
         NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setString(RENAME_TOKEN_NBT_IDENTIFIER, UUID.randomUUID().toString());
+        nbtItem.setByte(RENAME_TOKEN_NBT_IDENTIFIER, (byte) 0);
         nbtItem.applyNBT(itemStack);
         return itemStack;
     }

@@ -47,8 +47,9 @@ public class MySQLDatabase extends SQLDatabase {
         Schedulers.async().run(() -> {
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Tokens(UUID varchar(36) NOT NULL UNIQUE, Tokens bigint, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Gems(UUID varchar(36) NOT NULL UNIQUE, Gems bigint, PRIMARY KEY (UUID))");
+            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Credits(UUID varchar(36) NOT NULL UNIQUE, Credits bigint, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Ranks(UUID varchar(36) NOT NULL UNIQUE, Rank bigint, PRIMARY KEY (UUID))");
-            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Gangs(ID varchar(36) NOT NULL UNIQUE, Name TEXT NOT NULL UNIQUE, Owner varchar(36) NOT NULL, Trophies bigint, Announcement TEXT DEFAULT 'Welcome to the Gang!', PRIMARY KEY (ID)");
+            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Gangs(ID varchar(36) NOT NULL UNIQUE, Name TEXT NOT NULL UNIQUE, Owner varchar(36) NOT NULL, Trophies bigint, PRIMARY KEY (ID)");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Gangs_Members(ID int NOT NULL AUTO_INCREMENT, GangID int NOT NULL, Player varchar(36) NOT NULL, PRIMARY KEY (ID), FOREIGN KEY (GangID) REFERENCES EvilPrison_Gangs(ID)");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_PMines(UUID varchar(36) NOT NULL UNIQUE, Public BOOL DEFAULT 1, Tax DOUBLE(4, 1) DEFAULT 10.0, Material TEXT, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_PMines_Access(ID int NOT NULL AUTO_INCREMENT, Player varchar(36) NOT NULL, PMine varchar(36) NOT NULL, PRIMARY KEY (ID), FOREIGN KEY (PMine) REFERENCES EvilPrison_PMines(UUID)");

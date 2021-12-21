@@ -21,11 +21,15 @@ public abstract class Database {
 
     public abstract long getPlayerGems(OfflinePlayer player);
 
+    public abstract long getPlayerCredits(OfflinePlayer player);
+
     public abstract void updatePlayerTokens(OfflinePlayer player, long amount);
 
     public abstract void updatePlayerRank(OfflinePlayer player, long amount);
 
     public abstract void updatePlayerGems(OfflinePlayer player, long amount);
+
+    public abstract void updatePlayerCredits(OfflinePlayer player, long amount);
 
     public abstract Map<UUID, Long> getTop10Tokens();
 
@@ -33,11 +37,15 @@ public abstract class Database {
 
     public abstract Map<UUID, Long> getTop10Gems();
 
+    public abstract Map<UUID, Long> getTop10Credits();
+
     public abstract void addIntoTokens(OfflinePlayer player);
 
     public abstract void addIntoRanks(OfflinePlayer player);
 
     public abstract void addIntoGems(OfflinePlayer player);
+
+    public abstract void addIntoCredits(OfflinePlayer player);
 
     public abstract int getPlayerAutoMinerTime(OfflinePlayer player);
 

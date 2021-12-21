@@ -161,9 +161,9 @@ public abstract class EvilPrisonEnchantment implements Refundable {
     }
 
     public static void reloadAll() {
-        allEnchantmentsById.values().forEach(paramUltraPrisonEnchantment -> {
-            paramUltraPrisonEnchantment.reloadDefaultAttributes();
-            paramUltraPrisonEnchantment.reload();
+        allEnchantmentsById.values().forEach(enchantment -> {
+            enchantment.reloadDefaultAttributes();
+            enchantment.reload();
         });
         EvilPrisonCore.getInstance().getLogger().info(Text.colorize("&aSuccessfully reloaded all enchants."));
     }
@@ -173,8 +173,6 @@ public abstract class EvilPrisonEnchantment implements Refundable {
     }
 
     public boolean canBeBought(ItemStack paramItemStack) {
-        if (!this.enchants.getPlugin().isModuleEnabled("Pickaxe Levels"))
-            return true;
         return (this.enchants.getPlugin().getPickaxe().getPickaxeLevels().getPickaxeLevel(paramItemStack).getLevel() >= this.requiredPickaxeLevel);
     }
 
