@@ -63,21 +63,7 @@ public class PrivateMines implements EvilPrisonModules {
         registerEvents();
         mines = new HashMap<>();
         loadDefaultWorld();
-        loadAllMines();
         this.enabled = true;
-    }
-
-    private void loadAllMines() {
-        ResultSet resultSet = this.plugin.getPluginDatabase().getAllMineData();
-        try {
-            while (resultSet.next()) {
-                this.mines.put(UUID.fromString(resultSet.getString("UUID")), new Mine(
-                        this, UUID.fromString(resultSet.getString("UUID"))));
-                this.plugin.getLogger().info(String.format("Loaded %d Private Mines", this.mines.size()));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     private void loadDefaultWorld() {
@@ -109,7 +95,6 @@ public class PrivateMines implements EvilPrisonModules {
                             exception.printStackTrace();
                         }
                         this.plugin.getPluginDatabase().addIntoMineData(e.getPlayer());
-                        this.mines.put(e.getPlayer().getUniqueId(), new Mine(this, e.getPlayer().getUniqueId()));
                     });
                 }).bindWith(this.plugin);
         Events.subscribe(PlayerQuitEvent.class)

@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class SpeedEnchant extends EvilPrisonEnchantment {
     public SpeedEnchant(Enchants enchants) {
-        super(enchants, 5);
+        super(enchants, 4);
     }
 
     public void onEquip(Player player, ItemStack itemStack, int level) {}

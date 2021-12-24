@@ -12,7 +12,7 @@ public abstract class GemsCommand {
         this.gems = gems;
     }
 
-    public abstract boolean execute(CommandSender paramCommandSender, ImmutableList<String> paramImmutableList);
+    public abstract boolean execute(CommandSender sender, ImmutableList<String> list);
 
     public abstract boolean canExecute(CommandSender sender);
 }

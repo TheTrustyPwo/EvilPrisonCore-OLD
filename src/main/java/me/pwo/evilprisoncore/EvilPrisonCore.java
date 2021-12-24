@@ -3,6 +3,7 @@ package me.pwo.evilprisoncore;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.autominer.AutoMiner;
+import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.credits.Credits;
 import me.pwo.evilprisoncore.database.Database;
 import me.pwo.evilprisoncore.database.implementations.MySQLDatabase;
@@ -38,6 +39,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private Economy economy;
 
     private AutoMiner autoMiner;
+    private Blocks blocks;
     private Tokens tokens;
     private Gems gems;
     private Credits credits;
@@ -62,6 +64,10 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
 
     public Economy getEconomy() {
         return economy;
+    }
+
+    public Blocks getBlocks() {
+        return blocks;
     }
 
     public Tokens getTokens() {
@@ -120,6 +126,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         }
         this.pickaxesSupported = Collections.singletonList(Material.DIAMOND_PICKAXE);
         this.autoMiner = new AutoMiner(this);
+        this.blocks = new Blocks(this);
         this.tokens = new Tokens(this);
         this.gems = new Gems(this);
         this.credits = new Credits(this);
@@ -134,6 +141,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         }
         getLogger().info("Economy provider for Vault found - " + getEconomy().getName());
         loadModule(this.autoMiner);
+        loadModule(this.blocks);
         loadModule(this.tokens);
         loadModule(this.gems);
         loadModule(this.credits);

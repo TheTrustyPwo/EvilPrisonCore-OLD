@@ -1,0 +1,7 @@
+block-rewards:
+  1:
+    blocks-required: 100
+    rewards:
+      - "&f100,000 Tokens"
+    commands:
+      - tokens give %player% 100000

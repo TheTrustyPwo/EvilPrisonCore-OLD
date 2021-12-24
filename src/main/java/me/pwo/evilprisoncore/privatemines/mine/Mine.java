@@ -1,10 +1,5 @@
 package me.pwo.evilprisoncore.privatemines.mine;
 
-import com.grinderwolf.swm.api.exceptions.CorruptedWorldException;
-import com.grinderwolf.swm.api.exceptions.NewerFormatException;
-import com.grinderwolf.swm.api.exceptions.UnknownWorldException;
-import com.grinderwolf.swm.api.exceptions.WorldInUseException;
-import com.grinderwolf.swm.api.world.SlimeWorld;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
@@ -13,19 +8,12 @@ import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.patterns.BlockChance;
 import com.sk89q.worldedit.patterns.RandomFillPattern;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import me.lucko.helper.Events;
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.scheduler.Task;
 import me.lucko.helper.utils.Players;
-import me.pwo.evilprisoncore.privatemines.PrivateMines;
 import me.pwo.evilprisoncore.ranks.Ranks;
 import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,11 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class Mine {
     private static final int autoResetInterval = 300;
     private static final double resetPercentage = 30.0D;
-    private final PrivateMines privateMines;
     private final UUID owner;
     private World world;
-    private SlimeWorld slimeWorld;
-    private String worldName;
     private Location spawnLocation;
     private Location corner1;
     private Location corner2;
@@ -49,13 +34,14 @@ public class Mine {
     private Material material;
     private List<UUID> playersInMine;
     private List<UUID> playersWithAccess;
-    private List<UUID> bannedPlayers;
     private Task resetTask;
 
-    public Mine(PrivateMines privateMines, UUID owner) {
-        this.privateMines = privateMines;
+    public Mine(UUID owner, boolean isPublic, double tax, Material material, List<UUID> playersWithAccess) {
         this.owner = owner;
-        this.worldName = "PMine-" + owner;
+        this.isPublic = isPublic;
+        this.tax = tax;
+        this.material = material;
+        this.playersWithAccess = playersWithAccess;
         this.mineSize = Ranks.getInstance().getApi().getPlayerRank(Players.getNullable(owner)).getMineSize();
         updateCornerLocation();
         build();
@@ -112,56 +98,8 @@ public class Mine {
         return mineSize;
     }
 
-    public void givePlayerAccess(OfflinePlayer player) {
-        this.privateMines.getPlugin().getPluginDatabase().givePlayerPrivateMineAccess(Players.getOfflineNullable(owner), player);
-    }
-
-    public void revokePlayerAccess(OfflinePlayer player) {
-        this.privateMines.getPlugin().getPluginDatabase().revokePlayerPrivateMineAccess(Players.getOfflineNullable(owner), player);
-    }
-
-    public void addPlayer(Player player) {
-        if (!this.bannedPlayers.contains(player.getUniqueId()) && this.playersInMine.size() <= 10) {
-            this.playersInMine.add(player.getUniqueId());
-            player.teleport(this.spawnLocation);
-            Events.subscribe(PlayerQuitEvent.class)
-                    .expireAfter(1)
-                    .filter(e -> e.getPlayer().equals(player))
-                    .handler(e -> this.playersInMine.remove(player.getUniqueId()));
-        }
-    }
-
     public void build() {
-        // Load Mine data from Database
-        ResultSet resultSet = this.privateMines.getPlugin().getPluginDatabase().getPlayerMineData(Players.getOfflineNullable(owner));
-        try {
-            this.isPublic = resultSet.getBoolean("Public");
-            this.tax = resultSet.getDouble("Tax");
-            this.material = Material.getMaterial(resultSet.getString("Material"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        // Load Slime World
-        SlimeWorld.SlimeProperties properties = SlimeWorld.SlimeProperties.builder()
-                .difficulty(0)
-                .allowAnimals(false)
-                .allowMonsters(false)
-                .spawnX(spawnLocation.getX())
-                .spawnY(spawnLocation.getY())
-                .spawnZ(spawnLocation.getZ())
-                .pvp(false)
-                .readOnly(false)
-                .build();
-        try {
-            this.slimeWorld = privateMines.getSlimePlugin().loadWorld(
-                    privateMines.getSlimePlugin().getLoader("mysql"),
-                    worldName,
-                    properties);
-        } catch (CorruptedWorldException | UnknownWorldException | IOException | NewerFormatException | WorldInUseException e) {
-            e.printStackTrace();
-        }
-        this.world = Bukkit.getWorld(worldName);
-        this.spawnLocation = new Location(world, 0.5D, 130.0D, 0.5D, 90.0f, 90.0f);
+
     }
 
     public void startAutoResetTask() {

@@ -6,9 +6,12 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.blocks.BaseBlock;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import me.lucko.helper.time.Time;
+import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
 import me.pwo.evilprisoncore.utils.RegionUtils;
+import me.pwo.evilprisoncore.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,7 +26,6 @@ import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class ShockwaveEnchant extends EvilPrisonEnchantment {
-
     private double chance;
 
     public ShockwaveEnchant(Enchants enchants) {
@@ -52,19 +54,8 @@ public class ShockwaveEnchant extends EvilPrisonEnchantment {
                     }
                 }
             }
-            com.sk89q.worldedit.world.World world = BukkitUtil.getLocalWorld(block.getWorld());
-            try {
-                EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1);
-                CuboidRegion cuboidRegion = new CuboidRegion(
-                        BukkitUtil.toVector(new Location(
-                                block.getWorld(), iCuboidSelection.getMinimumPoint().getBlockX(), block.getY(), iCuboidSelection.getMinimumPoint().getBlockZ()
-                        )), BukkitUtil.toVector(new Location(
-                        block.getWorld(), iCuboidSelection.getMaximumPoint().getBlockX(), block.getY(), iCuboidSelection.getMaximumPoint().getBlockZ()
-                )));
-                editSession.setBlocks(cuboidRegion, new BaseBlock(Material.AIR.getId()));
-            } catch (MaxChangedBlocksException maxChangedBlocksException) {
-                maxChangedBlocksException.printStackTrace();
-            }
+            for (Block block1 : blocks)
+                Utils.setBlockInNativeDataPalette(block1.getWorld(), block1.getX(), block1.getY(), block1.getZ(), 0, (byte) 0, true);
         }
     }
 

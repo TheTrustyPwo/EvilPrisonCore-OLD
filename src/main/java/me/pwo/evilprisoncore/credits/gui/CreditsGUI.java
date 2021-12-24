@@ -39,7 +39,9 @@ public class CreditsGUI extends Gui {
                 )).buildItem().build());
         // Credits Multiplier
         setItem(16, ItemStackBuilder.of(Material.BOOK)
-                .name("&6Credits Multi: &e&lx" + Credits.getInstance().getCreditsManager().getPayoutMultiplier())
+                .name("&6Rate: &e$1 = &4☀&c%rate% &6(&ex%multi%&6)"
+                        .replaceAll("%rate%", String.valueOf(Credits.getInstance().getCreditsManager().getCreditsExchangeRate()))
+                        .replaceAll("%multi%", String.valueOf(Credits.getInstance().getCreditsManager().getPayoutMultiplier())))
                 .lore(Arrays.asList(
                         "&7As the season ages, the credits",
                         "&7multiplier will increase! This means you will be",

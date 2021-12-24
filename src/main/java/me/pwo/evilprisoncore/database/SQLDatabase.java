@@ -2,8 +2,10 @@ package me.pwo.evilprisoncore.database;
 
 import com.zaxxer.hikari.HikariDataSource;
 import me.lucko.helper.Schedulers;
+import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.gangs.gang.Gang;
+import me.pwo.evilprisoncore.privatemines.mine.Mine;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -207,6 +209,45 @@ public abstract class SQLDatabase extends Database {
         execute("INSERT IGNORE INTO EvilPrison_Gems VALUES(?,?)", paramOfflinePlayer.getUniqueId().toString(), 0);
     }
 
+    @Override
+    public long getPlayerBlocks(OfflinePlayer paramOfflinePlayer) {
+        try {
+            Connection connection = this.hikari.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM EvilPrison_Blocks WHERE UUID=?");
+            preparedStatement.setString(1, paramOfflinePlayer.getUniqueId().toString());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next())
+                return resultSet.getLong("Blocks");
+        } catch (SQLException sQLException) {
+            sQLException.printStackTrace();
+        }
+        return 0L;
+    }
+
+    @Override
+    public void updatePlayerBlocks(OfflinePlayer paramOfflinePlayer, long paramLong) {
+        executeAsync("UPDATE EvilPrison_Blocks SET Blocks=? WHERE UUID=?", paramLong, paramOfflinePlayer.getUniqueId().toString());
+    }
+
+    @Override
+    public Map<UUID, Long> getTop10Blocks() {
+        LinkedHashMap<UUID, Long> linkedHashMap = new LinkedHashMap<>();
+        try {
+            Connection connection = this.hikari.getConnection();
+            ResultSet resultSet = connection.prepareStatement("SELECT * FROM EvilPrison_Blocks ORDER BY Blocks DESC LIMIT 10").executeQuery();
+            while (resultSet.next())
+                linkedHashMap.put(UUID.fromString(resultSet.getString("UUID")), resultSet.getLong("Blocks"));
+        } catch (SQLException sQLException) {
+            sQLException.printStackTrace();
+        }
+        return linkedHashMap;
+    }
+
+    @Override
+    public void addIntoBlocks(OfflinePlayer paramOfflinePlayer) {
+        execute("INSERT IGNORE INTO EvilPrison_Blocks VALUES(?,?)", paramOfflinePlayer.getUniqueId().toString(), 0);
+    }
+
     public void removeExpiredAutoMiners() {
         try(Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM EvilPrison_AutoMiner WHERE time <= 0")) {
             preparedStatement.execute();
@@ -239,23 +280,44 @@ public abstract class SQLDatabase extends Database {
         }
     }
 
-    public ResultSet getAllMineData() {
+    @Override
+    public List<Mine> getAllMineData() {
+        List<Mine> list = new ArrayList<>();
         try(PreparedStatement preparedStatement = this.hikari.getConnection().prepareStatement(
                 "SELECT * FROM EvilPrison_PMines")) {
-            return preparedStatement.executeQuery();
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    UUID owner = UUID.fromString(resultSet.getString("UUID"));
+                    list.add(new Mine(
+                            owner,
+                            resultSet.getBoolean("Public"),
+                            resultSet.getDouble("Tax"),
+                            Material.getMaterial(resultSet.getString("Material")),
+                            getAccessPlayersPrivateMine(Players.getOfflineNullable(owner))
+                    ));
+                }
+                return list;
+            }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
         return null;
     }
 
-    public ResultSet getPlayerMineData(OfflinePlayer player) {
+    @Override
+    public Mine getPlayerMineData(OfflinePlayer player) {
         try(PreparedStatement preparedStatement = this.hikari.getConnection().prepareStatement(
                 "SELECT * FROM EvilPrison_PMines WHERE UUID=?")) {
             preparedStatement.setString(1, player.getUniqueId().toString());
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet;
+                    return new Mine(
+                            UUID.fromString(resultSet.getString("UUID")),
+                            resultSet.getBoolean("Public"),
+                            resultSet.getDouble("Tax"),
+                            Material.getMaterial(resultSet.getString("Material")),
+                            getAccessPlayersPrivateMine(player)
+                    );
                 }
             }
         } catch (SQLException sqlException) {
@@ -280,20 +342,10 @@ public abstract class SQLDatabase extends Database {
     }
 
     @Override
-    public void banPlayerPrivateMine(OfflinePlayer owner, OfflinePlayer player) {
-        execute("INSERT INTO EvilPrison_PMines_Banned(Player, PMines) VALUES (?,?)", owner.getUniqueId(), player.getUniqueId());
-    }
-
-    @Override
-    public void unbanPlayerPrivateMine(OfflinePlayer owner, OfflinePlayer player) {
-        execute("DELETE FROM EvilPrison_PMines_Banned WHERE Player=?, PMine=?", owner.getUniqueId(), player.getUniqueId());
-    }
-
-    @Override
-    public List<UUID> getBannedPlayersPrivateMine(OfflinePlayer owner) {
+    public List<UUID> getAccessPlayersPrivateMine(OfflinePlayer owner) {
         List<UUID> list = new ArrayList<>();
         try(PreparedStatement preparedStatement = this.hikari.getConnection().prepareStatement(
-                "SELECT * FROM EvilPrison_PMines_Banned WHERE PMine=?")) {
+                "SELECT * FROM EvilPrison_PMines_Access WHERE PMine=?")) {
             preparedStatement.setString(1, owner.getUniqueId().toString());
             try(ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

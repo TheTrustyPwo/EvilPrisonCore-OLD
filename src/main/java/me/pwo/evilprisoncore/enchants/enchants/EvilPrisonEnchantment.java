@@ -158,6 +158,8 @@ public abstract class EvilPrisonEnchantment implements Refundable {
         (new HasteEnchant(Enchants.getInstance())).register();
         (new SpeedEnchant(Enchants.getInstance())).register();
         (new JumpBoostEnchant(Enchants.getInstance())).register();
+        (new ShockwaveEnchant(Enchants.getInstance())).register();
+        (new TokenMerchant(Enchants.getInstance())).register();
     }
 
     public static void reloadAll() {

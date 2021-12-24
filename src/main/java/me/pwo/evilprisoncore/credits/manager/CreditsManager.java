@@ -200,6 +200,10 @@ public class CreditsManager {
         ) + startingPayoutMulti), 2);
     }
 
+    public double getCreditsExchangeRate() {
+        return Utils.round(this.credits.getConfig().getDouble("GiftCards-Exchange-Rate") * getPayoutMultiplier(), 2);
+    }
+
     public String getSeasonAge() {
         long length = Instant.now().getEpochSecond() - this.credits.getConfig().getLong("Season-Start");
         int days = (int) TimeUnit.SECONDS.toDays(length);

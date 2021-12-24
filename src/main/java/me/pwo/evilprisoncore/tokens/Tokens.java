@@ -23,11 +23,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Tokens implements EvilPrisonModules {
+    private static Tokens instance;
     private final EvilPrisonCore plugin;
     private TokensManager tokensManager;
     private TokensAPI api;
     private Map<String, TokensCommand> commands;
     private boolean enabled;
+
+    public static Tokens getInstance() {
+        return instance;
+    }
 
     public Tokens(EvilPrisonCore evilPrisonCore) {
         this.plugin = evilPrisonCore;
@@ -52,6 +57,7 @@ public class Tokens implements EvilPrisonModules {
     public void reload() {}
 
     public void enable() {
+        instance = this;
         this.tokensManager = new TokensManager(this);
         this.api = new TokensAPIImpl(this.tokensManager);
         registerEvents();
