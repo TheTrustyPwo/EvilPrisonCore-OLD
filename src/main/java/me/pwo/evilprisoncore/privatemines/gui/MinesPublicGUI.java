@@ -1,5 +1,6 @@
 package me.pwo.evilprisoncore.privatemines.gui;
 
+import dev.dbassett.skullcreator.SkullCreator;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Gui;
 import me.lucko.helper.menu.Item;
@@ -28,7 +29,7 @@ public class MinesPublicGUI extends Gui {
     }
 
     private void getPlayerMineGuiItem(OfflinePlayer player) {
-        Item item = ItemStackBuilder.of(SkullUtils.getPlayerHead(player))
+        Item item = ItemStackBuilder.of(SkullCreator.itemFromUuid(getPlayer().getUniqueId()))
                 .name("&6%player%'s Mine".replaceAll("%player%", player.getName()))
                 .lore(Arrays.asList(
                         " ",

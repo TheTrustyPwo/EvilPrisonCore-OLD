@@ -1,14 +1,10 @@
 package me.pwo.evilprisoncore.utils;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import dev.dbassett.skullcreator.SkullCreator;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import java.lang.reflect.Field;
-import java.util.UUID;
 
 public class SkullUtils {
     // Mines GUIs
@@ -32,27 +28,7 @@ public class SkullUtils {
 
     public static void init() {}
 
-    public static ItemStack getCustomTextureHead(String paramString) {
-        ItemStack itemStack = new ItemStack(Material.SKULL_ITEM);
-        SkullMeta skullMeta = (SkullMeta)itemStack.getItemMeta();
-        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "");
-        gameProfile.getProperties().put("textures", new Property("textures", paramString));
-        try {
-            Field field = skullMeta.getClass().getDeclaredField("profile");
-            field.setAccessible(true);
-            field.set(skullMeta, gameProfile);
-        } catch (IllegalArgumentException|IllegalAccessException|NoSuchFieldException|SecurityException illegalArgumentException) {
-            illegalArgumentException.printStackTrace();
-        }
-        itemStack.setItemMeta(skullMeta);
-        return itemStack;
-    }
-
-    public static ItemStack getPlayerHead(OfflinePlayer player) {
-        ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        skullMeta.setOwningPlayer(player);
-        itemStack.setItemMeta(skullMeta);
-        return itemStack;
+    public static ItemStack getCustomTextureHead(String base64) {
+        return SkullCreator.itemFromBase64(base64);
     }
 }

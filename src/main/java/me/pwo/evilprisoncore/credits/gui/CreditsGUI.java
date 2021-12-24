@@ -1,5 +1,6 @@
 package me.pwo.evilprisoncore.credits.gui;
 
+import dev.dbassett.skullcreator.SkullCreator;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Gui;
 import me.lucko.helper.text3.Text;
@@ -29,7 +30,7 @@ public class CreditsGUI extends Gui {
                         "&f9 Jan 2022 &7and will end on &f20 Feb 2022&7."
                 )).enchant(Enchantment.DURABILITY).flag(ItemFlag.HIDE_ENCHANTS).buildItem().build());
         // Your Credits Balance
-        setItem(13, ItemStackBuilder.of(SkullUtils.getPlayerHead(getPlayer()))
+        setItem(13, ItemStackBuilder.of(SkullCreator.itemFromUuid(getPlayer().getUniqueId()))
                 .name("&6Your Credits: &4☀&c%credits%".replaceAll("%credits%", String.valueOf(Credits.getInstance().getCreditsManager().getPlayerCredits(getPlayer()))))
                 .lore(Arrays.asList(
                         "&7Credits can be exchanged for store credit!",

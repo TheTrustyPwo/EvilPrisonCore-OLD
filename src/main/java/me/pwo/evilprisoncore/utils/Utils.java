@@ -1,5 +1,6 @@
 package me.pwo.evilprisoncore.utils;
 
+import me.lucko.helper.text3.Text;
 import net.minecraft.server.v1_12_R1.Block;
 import net.minecraft.server.v1_12_R1.BlockPosition;
 import net.minecraft.server.v1_12_R1.IBlockData;
@@ -38,6 +39,18 @@ public class Utils {
                 .replace("CCCC", "CD")
                 .replace("DD", "M")
                 .replace("DCD", "CM");
+    }
+
+    public static String createProgressBar(String symbol, int length, double current, double max) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            if (current >= (max / length) * (i + 1)) {
+                stringBuilder.append("&a").append(symbol);
+            } else {
+                stringBuilder.append("&c").append(symbol);
+            }
+        }
+        return Text.colorize(stringBuilder.toString());
     }
 
     public static String formatNumber(double number, int type) {

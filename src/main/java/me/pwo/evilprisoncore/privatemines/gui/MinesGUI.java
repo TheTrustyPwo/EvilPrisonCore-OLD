@@ -1,5 +1,6 @@
 package me.pwo.evilprisoncore.privatemines.gui;
 
+import dev.dbassett.skullcreator.SkullCreator;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Gui;
 import me.lucko.helper.text3.Text;
@@ -24,7 +25,7 @@ public class MinesGUI extends Gui {
             for (byte slot = 0; slot < getHandle().getSize(); slot++)
                 setItem(slot, ItemStackBuilder.of(Material.STAINED_GLASS_PANE).data(7).buildItem().build());
         // Player Head Item
-        setItem(4, ItemStackBuilder.of(SkullUtils.getPlayerHead(getPlayer()))
+        setItem(4, ItemStackBuilder.of(SkullCreator.itemFromUuid(getPlayer().getUniqueId()))
                 .name(Text.colorize(String.format("&6&l%s's Mine", getPlayer().getName())))
                 .buildItem().build());
         // View Public Mines

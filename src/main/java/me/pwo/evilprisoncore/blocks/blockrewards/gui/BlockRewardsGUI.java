@@ -1,6 +1,5 @@
 package me.pwo.evilprisoncore.blocks.blockrewards.gui;
 
-import de.tr7zw.nbtapi.NBTItem;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Gui;
 import me.lucko.helper.menu.scheme.MenuPopulator;
@@ -9,7 +8,6 @@ import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.blocks.blockrewards.BlockRewards;
 import me.pwo.evilprisoncore.blocks.blockrewards.model.BlockReward;
-import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.utils.SkullUtils;
 import me.pwo.evilprisoncore.utils.Utils;
 import org.bukkit.Material;
@@ -21,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BlockRewardsGUI extends Gui {
-    private static final String LAST_CLAIMED_BLOCKS_REWARDS_TIER_NBT_TAG_IDENTIFIER = "EvilPrison-Blocks-LastClaimedTier";
     private static final MenuScheme REWARDS = new MenuScheme()
             .mask("111111111")
             .mask("000000001")
@@ -63,10 +60,9 @@ public class BlockRewardsGUI extends Gui {
         // Rewards
         MenuPopulator menuPopulator = REWARDS.newPopulator(this);
         long blocks = Blocks.getInstance().getApi().getPlayerBlocks(getPlayer());
-        NBTItem nbtItem = new NBTItem(Enchants.getInstance().getEnchantsManager().findPickaxe(getPlayer()));
-        int lastClaimedTier = nbtItem.getInteger(LAST_CLAIMED_BLOCKS_REWARDS_TIER_NBT_TAG_IDENTIFIER);
+        int lastClaimedTier = BlockRewards.getInstance().getBlockRewardsManager().getPlayerBlockRewardTier(getPlayer());
         for (int i = 1; i <= 29; i++) {
-            int tier = i + page * 29;
+            int tier = i + (page - 1) * 29;
             BlockReward tierReward = BlockRewards.getInstance().getBlockRewards().getOrDefault(tier, null);
             if (tierReward == null) break;
             if (blocks >= tierReward.getBlocksRequired()) {
@@ -78,8 +74,8 @@ public class BlockRewardsGUI extends Gui {
                             .lore(getRewardLore(tierReward, RewardProgress.UNCLAIMED)).buildItem().bind(e -> {
                                 if (!(tier > lastClaimedTier + 1)) {
                                     tierReward.runCommands(getPlayer());
-                                    nbtItem.setInteger(LAST_CLAIMED_BLOCKS_REWARDS_TIER_NBT_TAG_IDENTIFIER, tier);
-                                }
+                                    BlockRewards.getInstance().getBlockRewardsManager().setBlockRewardTier(getPlayer(), tier);
+                                } redraw();
                             }, ClickType.LEFT).build());
                 } else {
                     // Claimed
@@ -111,31 +107,36 @@ public class BlockRewardsGUI extends Gui {
                     if (string.equalsIgnoreCase("%rewards%")) {
                         blockReward.getRewards().forEach((reward) -> lore.add(" &2&l| " + reward)); continue;
                     } lore.add(string);
-                }
+                } return lore;
             } case UNCLAIMED: {
                 List<String> list = Arrays.asList(" ", "&6Rewards", "%rewards%", " ", "&a&lLEFT-CLICK &ato claim!");
                 for (String string : list) {
                     if (string.equalsIgnoreCase("%rewards%")) {
                         blockReward.getRewards().forEach((reward) -> lore.add(" &6&l| " + reward)); continue;
                     } lore.add(string);
-                }
+                } return lore;
             } case IN_PROGRESS: {
-                List<String> list = Arrays.asList(" ", "&6Rewards", "%rewards%", " ", "&e&lIN PROGRESS");
+                List<String> list = Arrays.asList(" ", "&6Rewards", "%rewards%", " ", "%progress% &7(%current%/%max%)", "&e&lIN PROGRESS");
+                long current = Blocks.getInstance().getApi().getPlayerBlocks(getPlayer());
+                long max = blockReward.getBlocksRequired();
+                String progress = Utils.createProgressBar("|", 10, current, max);
                 for (String string : list) {
                     if (string.equalsIgnoreCase("%rewards%")) {
                         blockReward.getRewards().forEach((reward) -> lore.add(" &6&l| " + reward)); continue;
-                    } lore.add(string);
-                }
+                    } lore.add(string
+                            .replaceAll("%progress%", progress)
+                            .replaceAll("%current%", String.valueOf(current))
+                            .replaceAll("%max%", String.valueOf(max)));
+                } return lore;
             } case LOCKED: {
                 List<String> list = Arrays.asList(" ", "&4Rewards", "%rewards%", " ", "&c&lLOCKED");
                 for (String string : list) {
                     if (string.equalsIgnoreCase("%rewards%")) {
                         blockReward.getRewards().forEach((reward) -> lore.add(" &4&l| " + reward)); continue;
                     } lore.add(string);
-                }
+                } return lore;
             }
-        }
-        return lore;
+        } return null;
     }
 
     private enum RewardProgress {

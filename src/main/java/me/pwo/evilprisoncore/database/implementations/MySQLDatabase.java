@@ -45,7 +45,8 @@ public class MySQLDatabase extends SQLDatabase {
 
     public void createTables() {
         Schedulers.async().run(() -> {
-            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Blocks(UUID varchar(36) NOT NULL UNIQUE, Blocks bigint, PRIMARY KEY (UUID))");
+            execute("CREATE TABLE IF NOT EXISTS EvilPrison_AutoMiner(UUID varchar(36) NOT NULL UNIQUE, Time int, primary key (UUID))");
+            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Blocks(UUID varchar(36) NOT NULL UNIQUE, Blocks bigint, Tier int, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Tokens(UUID varchar(36) NOT NULL UNIQUE, Tokens bigint, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Gems(UUID varchar(36) NOT NULL UNIQUE, Gems bigint, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Credits(UUID varchar(36) NOT NULL UNIQUE, Credits bigint, PRIMARY KEY (UUID))");

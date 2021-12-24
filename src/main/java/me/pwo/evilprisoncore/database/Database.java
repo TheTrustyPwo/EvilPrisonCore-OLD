@@ -56,6 +56,10 @@ public abstract class Database {
 
     public abstract void addIntoBlocks(OfflinePlayer player);
 
+    public abstract int getPlayerBlockTier(OfflinePlayer player);
+
+    public abstract void updatePlayerBlockTier(OfflinePlayer player, int tier);
+
     public abstract int getPlayerAutoMinerTime(OfflinePlayer player);
 
     public abstract void saveAutoMiner(Player player, int amount);

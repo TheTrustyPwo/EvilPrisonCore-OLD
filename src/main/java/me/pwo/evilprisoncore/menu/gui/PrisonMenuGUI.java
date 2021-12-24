@@ -1,5 +1,6 @@
 package me.pwo.evilprisoncore.menu.gui;
 
+import dev.dbassett.skullcreator.SkullCreator;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Gui;
 import me.lucko.helper.text3.Text;
@@ -33,7 +34,7 @@ public class PrisonMenuGUI extends Gui {
 
                 }, ClickType.LEFT).build());
         // Player Profile Item
-        setItem(49, ItemStackBuilder.of(SkullUtils.getPlayerHead(getPlayer()))
+        setItem(49, ItemStackBuilder.of(SkullCreator.itemFromUuid(getPlayer().getUniqueId()))
                 .name(Text.colorize("&c&lYour Profile"))
                 .lore(Arrays.asList(
                         Text.colorize("&7Click to view your profile."),

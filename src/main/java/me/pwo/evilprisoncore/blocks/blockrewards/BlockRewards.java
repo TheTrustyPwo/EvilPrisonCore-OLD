@@ -1,9 +1,11 @@
 package me.pwo.evilprisoncore.blocks.blockrewards;
 
+import jdk.nashorn.internal.ir.Block;
 import me.lucko.helper.Commands;
 import me.pwo.evilprisoncore.EvilPrisonModules;
 import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.blocks.blockrewards.gui.BlockRewardsGUI;
+import me.pwo.evilprisoncore.blocks.blockrewards.manager.BlockRewardsManager;
 import me.pwo.evilprisoncore.blocks.blockrewards.model.BlockReward;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,12 +16,21 @@ import java.util.List;
 public class BlockRewards implements EvilPrisonModules {
     private static BlockRewards instance;
     private final Blocks blocks;
+    private BlockRewardsManager blockRewardsManager;
     private FileConfiguration blockRewardsConfig;
-    private LinkedHashMap<Integer, BlockReward> blockRewards;
+    private final LinkedHashMap<Integer, BlockReward> blockRewards = new LinkedHashMap<>();
     private boolean enabled;
 
     public BlockRewards(Blocks blocks) {
         this.blocks = blocks;
+    }
+
+    public BlockRewardsManager getBlockRewardsManager() {
+        return blockRewardsManager;
+    }
+
+    public Blocks getBlocks() {
+        return blocks;
     }
 
     public static BlockRewards getInstance() {
@@ -33,9 +44,11 @@ public class BlockRewards implements EvilPrisonModules {
     @Override
     public void enable() {
         instance = this;
+        this.blockRewardsManager = new BlockRewardsManager(this);
         this.blockRewardsConfig = this.blocks.getPlugin().getFileUtils().getConfig("block-rewards.yml").copyDefaults(true).save().get();
         this.enabled = true;
         loadBlockRewards();
+        registerCommands();
     }
 
     private void loadBlockRewards() {
