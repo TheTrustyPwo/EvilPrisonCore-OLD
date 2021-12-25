@@ -1,14 +1,14 @@
 package me.pwo.evilprisoncore.enchants.enchants.impl;
 
 import me.pwo.evilprisoncore.enchants.Enchants;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SpeedEnchant extends EvilPrisonEnchantment {
+public class SpeedEnchant extends EvilEnchant {
     public SpeedEnchant(Enchants enchants) {
         super(enchants, 4);
     }

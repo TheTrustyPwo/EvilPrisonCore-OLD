@@ -1,18 +1,10 @@
 package me.pwo.evilprisoncore.enchants.enchants.impl;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.blocks.BaseBlock;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import me.lucko.helper.time.Time;
-import me.pwo.evilprisoncore.EvilPrisonCore;
+import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.enchants.Enchants;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.utils.RegionUtils;
 import me.pwo.evilprisoncore.utils.Utils;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -25,11 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class ShockwaveEnchant extends EvilPrisonEnchantment {
+public class ShockwaveEnchant extends EvilEnchant {
     private double chance;
 
     public ShockwaveEnchant(Enchants enchants) {
-        super(enchants, 10);
+        super(enchants, 7);
     }
 
     @Override
@@ -56,6 +48,7 @@ public class ShockwaveEnchant extends EvilPrisonEnchantment {
             }
             for (Block block1 : blocks)
                 Utils.setBlockInNativeDataPalette(block1.getWorld(), block1.getX(), block1.getY(), block1.getZ(), 0, (byte) 0, true);
+            Blocks.getInstance().getApi().addBlocks(e.getPlayer(), blocks.size());
         }
     }
 

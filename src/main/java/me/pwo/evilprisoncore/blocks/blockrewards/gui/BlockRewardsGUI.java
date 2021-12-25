@@ -119,7 +119,7 @@ public class BlockRewardsGUI extends Gui {
                 List<String> list = Arrays.asList(" ", "&6Rewards", "%rewards%", " ", "%progress% &7(%current%/%max%)", "&e&lIN PROGRESS");
                 long current = Blocks.getInstance().getApi().getPlayerBlocks(getPlayer());
                 long max = blockReward.getBlocksRequired();
-                String progress = Utils.createProgressBar("|", 10, current, max);
+                String progress = Utils.createProgressBar("|", 20, current, max);
                 for (String string : list) {
                     if (string.equalsIgnoreCase("%rewards%")) {
                         blockReward.getRewards().forEach((reward) -> lore.add(" &6&l| " + reward)); continue;

@@ -1,0 +1,5 @@
+RareBlock:
+  Blocks-Required: 1000
+  Rewards:
+    "&e100,000 Tokens!":
+      - tokens give %player% 100000

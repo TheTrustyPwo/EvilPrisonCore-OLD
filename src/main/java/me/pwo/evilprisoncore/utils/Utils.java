@@ -13,11 +13,11 @@ import java.util.Collections;
 import static java.lang.String.join;
 
 public class Utils {
-    public static void setBlockInNativeDataPalette(World paramWorld, int paramInt1, int paramInt2, int paramInt3, int paramInt4, byte paramByte, boolean paramBoolean) {
-        WorldServer worldServer = ((CraftWorld)paramWorld).getHandle();
-        BlockPosition blockPosition = new BlockPosition(paramInt1, paramInt2, paramInt3);
-        IBlockData iBlockData = Block.getByCombinedId(paramInt4 + (paramByte << 12));
-        worldServer.setTypeAndData(blockPosition, iBlockData, paramBoolean ? 3 : 2);
+    public static void setBlockInNativeDataPalette(World world, int x, int y, int z, int blockId, byte data, boolean applyPhysics) {
+        WorldServer worldServer = ((CraftWorld)world).getHandle();
+        BlockPosition blockPosition = new BlockPosition(x, y, z);
+        IBlockData iBlockData = Block.getByCombinedId(blockId + (data << 12));
+        worldServer.setTypeAndData(blockPosition, iBlockData, applyPhysics ? 3 : 2);
     }
 
     public static double round(double value, int precision) {
@@ -69,5 +69,9 @@ public class Utils {
             default:
                 return String.valueOf(number);
         }
+    }
+
+    public static String formatNumber(long number) {
+        return String.format("%,d", number);
     }
 }

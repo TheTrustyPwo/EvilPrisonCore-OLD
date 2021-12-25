@@ -1,12 +1,11 @@
 package me.pwo.evilprisoncore.enchants.manager;
 
 import de.tr7zw.nbtapi.NBTItem;
-import me.lucko.helper.Schedulers;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Item;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.enchants.Enchants;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.enchants.gui.DisenchantGUI;
 import me.pwo.evilprisoncore.enchants.gui.EnchantGUI;
 import me.pwo.evilprisoncore.pickaxe.pickaxelevels.model.PickaxeLevel;
@@ -29,6 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("deprecation")
 public class EnchantsManager {
     private static final String BLOCK_BROKEN_NBT_IDENTIFIER = "EvilPrison-Pickaxe-BlocksBroken";
     private static final String ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX = "EvilPrison-Pickaxe-Enchant-";
@@ -64,9 +64,9 @@ public class EnchantsManager {
         reload();
     }
 
-    public HashMap<EvilPrisonEnchantment, Integer> getPlayerEnchants(ItemStack itemStack) {
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = new HashMap<>();
-        for (EvilPrisonEnchantment enchantment : EvilPrisonEnchantment.all()) {
+    public HashMap<EvilEnchant, Integer> getPlayerEnchants(ItemStack itemStack) {
+        HashMap<EvilEnchant, Integer> hashMap = new HashMap<>();
+        for (EvilEnchant enchantment : EvilEnchant.all()) {
             int level = getEnchantLevel(itemStack, enchantment.getId());
             if (level == 0) continue;
             hashMap.put(enchantment, level);
@@ -99,7 +99,7 @@ public class EnchantsManager {
             Matcher matcher = pattern.matcher(string);
             if (matcher.find()) {
                 int id = Integer.parseInt(matcher.group().replaceAll("\\D", ""));
-                EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
+                EvilEnchant enchantment = EvilEnchant.getEnchantById(id);
                 if (enchantment != null) {
                     int level = getEnchantLevel(itemStack, id);
                     if (level > 0) string = string.replace(matcher.group(), enchantment.getName() + " " + level);
@@ -143,21 +143,21 @@ public class EnchantsManager {
     }
 
     public void handleBlockBreak(BlockBreakEvent e, ItemStack itemStack) {
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(itemStack);
-        for (EvilPrisonEnchantment enchantment : hashMap.keySet())
+        HashMap<EvilEnchant, Integer> hashMap = getPlayerEnchants(itemStack);
+        for (EvilEnchant enchantment : hashMap.keySet())
             enchantment.onBlockBreak(e, hashMap.get(enchantment), ThreadLocalRandom.current().nextDouble(100.0D));
     }
 
     public void handlePickaxeEquip(Player player, ItemStack itemStack) {
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(itemStack);
-        for (EvilPrisonEnchantment enchantment : hashMap.keySet())
+        HashMap<EvilEnchant, Integer> hashMap = getPlayerEnchants(itemStack);
+        for (EvilEnchant enchantment : hashMap.keySet())
             enchantment.onEquip(player, itemStack, hashMap.get(enchantment));
     }
 
     public void handlePickaxeUnequip(Player player, ItemStack itemStack) {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(itemStack);
-        for (EvilPrisonEnchantment enchantment : hashMap.keySet())
+        HashMap<EvilEnchant, Integer> hashMap = getPlayerEnchants(itemStack);
+        for (EvilEnchant enchantment : hashMap.keySet())
             enchantment.onUnequip(player, itemStack, hashMap.get(enchantment));
     }
 
@@ -170,169 +170,123 @@ public class EnchantsManager {
     }
 
     public ItemStack addEnchant(ItemStack itemStack, int id, int levels) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
+        EvilEnchant enchantment = EvilEnchant.getEnchantById(id);
         if (enchantment == null || itemStack == null) return itemStack;
         NBTItem nbtItem = new NBTItem(itemStack, true);
-        if (levels > 0) nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + enchantment.getId(), levels);
+        if (levels >= 0) nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + enchantment.getId(), levels);
         if (!nbtItem.hasKey(PICKAXE_ID_NBT_IDENTIFIER)) nbtItem.setString(PICKAXE_ID_NBT_IDENTIFIER, UUID.randomUUID().toString());
         nbtItem.mergeCustomNBT(itemStack);
         applyLoreToPickaxe(itemStack);
         return itemStack;
     }
 
-    public void removeEnchant(ItemStack itemStack, int id, int levels) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
-        if (enchantment == null || itemStack == null || levels == 0) return;
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + id, levels - 1);
-        nbtItem.mergeCustomNBT(itemStack);
-        applyLoreToPickaxe(itemStack);
-    }
-
-    public void setEnchant(ItemStack itemStack, int id, int levels) {
-        EvilPrisonEnchantment enchantment = EvilPrisonEnchantment.getEnchantById(id);
-        if (enchantment == null || itemStack == null) return;
-        NBTItem nbtItem = new NBTItem(itemStack);
-        nbtItem.setInteger(ENCHANT_LEVEL_NBT_IDENTIFIER_PREFIX + id, levels);
-        nbtItem.mergeCustomNBT(itemStack);
-        applyLoreToPickaxe(itemStack);
-    }
-
-    public Item getGuiItem(EvilPrisonEnchantment enchantment, EnchantGUI enchantGUI, int currentLevel) {
+    public Item getGuiItem(EvilEnchant enchantment, EnchantGUI enchantGUI, int currentLevel) {
         ItemStackBuilder itemStackBuilder = ItemStackBuilder.of(enchantment.getMaterial());
         if (enchantment.getBase64() != null && !enchantment.getBase64().isEmpty())
             itemStackBuilder = ItemStackBuilder.of(SkullUtils.getCustomTextureHead(enchantment.getBase64()));
         itemStackBuilder.name(enchantment.getName());
         itemStackBuilder.lore(translateLore(enchantment, this.ENCHANT_GUI_ITEM_LORE, currentLevel));
         return itemStackBuilder.buildItem().bind(e -> {
-            if (!enchantment.canBeBought(enchantGUI.getPickAxe())) return;
+            if (!enchantment.canBeBought(enchantGUI.getPickaxe())) return;
             if (e.getClick() == ClickType.LEFT) buyEnchant(enchantment, enchantGUI, currentLevel, 1);
             else if (e.getClick() == ClickType.RIGHT) buyEnchant(enchantment, enchantGUI, currentLevel, 10);
             else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.SHIFT_RIGHT) buyEnchant(enchantment, enchantGUI, currentLevel, 100);
-            else if (e.getClick() == ClickType.DROP) buyEnchant(enchantment, enchantGUI, currentLevel,
-                    getMaxEnchantPurchasable(enchantment, currentLevel, this.enchants.getPlugin().getTokens().getApi().getPlayerTokens(enchantGUI.getPlayer())));
+            else if (e.getClick() == ClickType.DROP) buyMaxEnchant(enchantment, enchantGUI, currentLevel);
             enchantGUI.redraw();
         }, ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.RIGHT, ClickType.LEFT, ClickType.DROP).build();
     }
 
-    private int getMaxEnchantPurchasable(EvilPrisonEnchantment enchantment, int currentLevel, long tokens) {
+    private int getMaxEnchantPurchasable(EvilEnchant enchantment, int currentLevel, long tokens) {
         return (int) Math.floor((float) (enchantment.getIncreaseCost() + 2 * tokens) /
                 (2 * currentLevel * enchantment.getIncreaseCost() + 2 * enchantment.getCost() + enchantment.getIncreaseCost()));
     }
 
-    private long getEnchantPrice(EvilPrisonEnchantment enchantment, int currentLevel, int levelsToBuy) {
+    private long getEnchantPrice(EvilEnchant enchantment, int currentLevel, int levelsToBuy) {
         return (long) Math.floor((float) (levelsToBuy *
                 (2 * currentLevel * enchantment.getIncreaseCost() + enchantment.getCost() +
                         levelsToBuy * enchantment.getIncreaseCost() - enchantment.getIncreaseCost())) / 2);
     }
 
-    public void buyEnchant(EvilPrisonEnchantment enchantment, EnchantGUI enchantGUI, int currentLevel, int levelsToBuy) {
+    public void buyEnchant(EvilEnchant enchantment, EnchantGUI enchantGUI, int currentLevel, int levelsToBuy) {
         if (currentLevel >= enchantment.getMaxLevel()) {
             PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&e&l(!) &eYou have already maxed out this enchantment");
             return;
         }
-        if (currentLevel + levelsToBuy > enchantment.getMaxLevel()) {
-            PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&e&l(!) &eThis transaction would exceed the max level for this enchant.\"");
-            return;
-        }
+        levelsToBuy = Math.min(levelsToBuy, enchantment.getMaxLevel() - currentLevel);
         long cost = getEnchantPrice(enchantment, currentLevel, levelsToBuy);
         if (!this.enchants.getPlugin().getTokens().getApi().hasEnough(enchantGUI.getPlayer(), cost)) {
             PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&c&l(!) &cNot Enough Tokens");
             return;
         }
         this.enchants.getPlugin().getTokens().getApi().removeTokens(enchantGUI.getPlayer(), cost);
-        addEnchant(enchantGUI.getPickAxe(), enchantment.getId(), currentLevel + levelsToBuy);
-        enchantment.onUnequip(enchantGUI.getPlayer(), enchantGUI.getPickAxe(), currentLevel);
-        enchantment.onEquip(enchantGUI.getPlayer(), enchantGUI.getPickAxe(), currentLevel + levelsToBuy);
-        enchantGUI.getPlayer().getInventory().setItem(enchantGUI.getPickaxePlayerInventorySlot(), enchantGUI.getPickAxe());
-        PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&6&lENCHANTS &8» &fYou purchased &6%amount% %enchant% &flevels for &6⛁%tokens%&f."
+        addEnchant(enchantGUI.getPickaxe(), enchantment.getId(), currentLevel + levelsToBuy);
+        enchantment.onUnequip(enchantGUI.getPlayer(), enchantGUI.getPickaxe(), currentLevel);
+        enchantment.onEquip(enchantGUI.getPlayer(), enchantGUI.getPickaxe(), currentLevel + levelsToBuy);
+        enchantGUI.getPlayer().getInventory().setItem(enchantGUI.getPickaxePlayerInventorySlot(), enchantGUI.getPickaxe());
+        PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&eYou purchased &6%amount% %enchant% &elevels for &6⛁%tokens%&e."
                 .replace("%amount%", String.valueOf(levelsToBuy))
                 .replace("%enchant%", enchantment.getName())
-                .replace("%tokens%", String.format("%,d", cost)));
+                .replace("%tokens%", String.format("%,d", cost)), true);
     }
 
-    public void disenchant(EvilPrisonEnchantment enchantment, DisenchantGUI paramDisenchantGUI, int paramInt1, int paramInt2) {
-        if (paramInt1 <= 0) {
-            PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_no_level"));
+    public void buyMaxEnchant(EvilEnchant enchantment, EnchantGUI enchantGUI, int currentLevel) {
+        if (currentLevel >= enchantment.getMaxLevel()) {
+            PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&c&l(!) &cYou have already maxed out this enchantment");
             return;
         }
-        long l = 0L;
-        enchantment.onUnequip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), paramInt1);
-        for (byte b = 0; b < paramInt2; b++, paramInt1--) {
-            if (paramInt1 <= 0)
-                break;
-            long l1 = enchantment.getCostOfLevel(paramInt1);
-            removeEnchant(paramDisenchantGUI.getPickAxe(), enchantment.getId(), paramInt1);
-            paramDisenchantGUI.getPlayer().getInventory().setItem(paramDisenchantGUI.getPickaxePlayerInventorySlot(), paramDisenchantGUI.getPickAxe());
-            l = (long)(l + l1 * this.refundPercentage / 100.0D);
+        int levelsToBuy = Math.min(getMaxEnchantPurchasable(enchantment, currentLevel, this.enchants.getPlugin().getTokens().getApi().getPlayerTokens(enchantGUI.getPlayer())), enchantment.getMaxLevel());
+        if (levelsToBuy == 0) {
+            PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&c&l(!) &cNot Enough Tokens");
+            return;
         }
-        enchantment.onEquip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), paramInt1);
-        this.enchants.getPlugin().getTokens().getApi().addTokens(paramDisenchantGUI.getPlayer(), l, false);
-        PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_refunded").replace("%amount%", String.valueOf(paramInt2)).replace("%enchant%", enchantment.getName()));
-        PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_tokens_back").replace("%tokens%", String.valueOf(l)));
+        long cost = getEnchantPrice(enchantment, currentLevel, levelsToBuy);
+        this.enchants.getPlugin().getTokens().getApi().removeTokens(enchantGUI.getPlayer(), cost);
+        addEnchant(enchantGUI.getPickaxe(), enchantment.getId(), currentLevel + levelsToBuy);
+        enchantment.onUnequip(enchantGUI.getPlayer(), enchantGUI.getPickaxe(), currentLevel);
+        enchantment.onEquip(enchantGUI.getPlayer(), enchantGUI.getPickaxe(), currentLevel + levelsToBuy);
+        enchantGUI.getPlayer().getInventory().setItem(enchantGUI.getPickaxePlayerInventorySlot(), enchantGUI.getPickaxe());
+        PlayerUtils.sendMessage(enchantGUI.getPlayer(), "&eYou purchased &6%amount% %enchant% &elevels for &6⛁%tokens%&e."
+                .replace("%amount%", String.valueOf(levelsToBuy))
+                .replace("%enchant%", enchantment.getName())
+                .replace("%tokens%", String.format("%,d", cost)), true);
     }
 
-    public void disenchantMax(EvilPrisonEnchantment enchantment, DisenchantGUI paramDisenchantGUI, int paramInt) {
-        if (paramInt <= 0) {
-            PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_no_level"));
+    public void disenchant(EvilEnchant enchantment, DisenchantGUI disenchantGUI, int currentLevel, int levelsToRemove) {
+        if (currentLevel <= 0) {
+            PlayerUtils.sendMessage(disenchantGUI.getPlayer(), "&c&l(!) &cYou do not have this enchant!");
             return;
         }
-        if (this.lockedPlayers.contains(paramDisenchantGUI.getPlayer().getUniqueId())) {
-            PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("transaction_in_progress"));
-            return;
-        }
-        this.lockedPlayers.add(paramDisenchantGUI.getPlayer().getUniqueId());
-        Schedulers.async().run(() -> {
-            int i = paramInt;
-            int j = i;
-            long l = 0L;
-            while (paramDisenchantGUI.getPlayer().isOnline() && i > 0) {
-                long l1 = enchantment.getCostOfLevel(i);
-                l = (long)(l + l1 * this.refundPercentage / 100.0D);
-                i--;
-            }
-            if (!paramDisenchantGUI.getPlayer().isOnline()) {
-                this.lockedPlayers.remove(paramDisenchantGUI.getPlayer().getUniqueId());
-                return;
-            }
-            this.lockedPlayers.remove(paramDisenchantGUI.getPlayer().getUniqueId());
-            Schedulers.sync().run(() -> {
-                enchantment.onUnequip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), paramInt);
-                this.setEnchant(paramDisenchantGUI.getPickAxe(), enchantment.getId(), j);
-                paramDisenchantGUI.getPlayer().getInventory().setItem(paramDisenchantGUI.getPickaxePlayerInventorySlot(), paramDisenchantGUI.getPickAxe());
-                enchantment.onEquip(paramDisenchantGUI.getPlayer(), paramDisenchantGUI.getPickAxe(), j);
-                paramDisenchantGUI.redraw();
-            });
-            this.enchants.getPlugin().getTokens().getApi().addTokens(paramDisenchantGUI.getPlayer(), l, false);
-            PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_refunded").replace("%amount%", String.valueOf(j)).replace("%enchant%", enchantment.getName()));
-            PlayerUtils.sendMessage(paramDisenchantGUI.getPlayer(), this.enchants.getMessage("enchant_tokens_back").replace("%tokens%", String.valueOf(l)));
-        });
+        enchantment.onUnequip(disenchantGUI.getPlayer(), disenchantGUI.getPickaxe(), currentLevel);
+        levelsToRemove = Math.min(currentLevel, levelsToRemove);
+        long amount = (long) (getEnchantPrice(enchantment, currentLevel - levelsToRemove, levelsToRemove) * (this.refundPercentage / 100.0D));
+        addEnchant(disenchantGUI.getPickaxe(), enchantment.getId(), currentLevel - levelsToRemove);
+        disenchantGUI.getPlayer().getInventory().setItem(disenchantGUI.getPickaxePlayerInventorySlot(), disenchantGUI.getPickaxe());
+        enchantment.onEquip(disenchantGUI.getPlayer(), disenchantGUI.getPickaxe(), currentLevel - levelsToRemove);
+        disenchantGUI.getPlayer().getInventory().setItem(disenchantGUI.getPickaxePlayerInventorySlot(), disenchantGUI.getPickaxe());
+        this.enchants.getPlugin().getTokens().getApi().addTokens(disenchantGUI.getPlayer(), amount, false);
+        PlayerUtils.sendMessage(disenchantGUI.getPlayer(), "&eYou refunded &6%amount% %enchant% &elevels for &6⛁%tokens%&e."
+                .replace("%amount%", String.valueOf(levelsToRemove))
+                .replace("%enchant%", enchantment.getName())
+                .replace("%tokens%", String.format("%,d", amount)), true);
     }
 
-    public me.lucko.helper.menu.Item getRefundGuiItem(EvilPrisonEnchantment enchantment, DisenchantGUI paramDisenchantGUI, int paramInt) {
+    public Item getRefundGuiItem(EvilEnchant enchantment, DisenchantGUI disenchantGUI, int currentLevel) {
         Material material = enchantment.isRefundEnabled() ? enchantment.getMaterial() : Material.BARRIER;
         ItemStackBuilder itemStackBuilder = ItemStackBuilder.of(material);
         if (enchantment.getBase64() != null && !enchantment.getBase64().isEmpty())
             itemStackBuilder = ItemStackBuilder.of(SkullUtils.getCustomTextureHead(enchantment.getBase64()));
-        itemStackBuilder.name(enchantment.isRefundEnabled() ? enchantment.getName() : this.enchants.getMessage("enchant_cant_disenchant"));
-        itemStackBuilder.lore(enchantment.isRefundEnabled() ? translateLore(enchantment, this.DISENCHANT_GUI_ITEM_LORE, paramInt) : new ArrayList<>());
-        return enchantment.isRefundEnabled() ? itemStackBuilder.buildItem().bind(paramInventoryClickEvent -> {
-            if (paramInventoryClickEvent.getClick() == ClickType.MIDDLE || paramInventoryClickEvent.getClick() == ClickType.SHIFT_RIGHT) {
-                disenchant(enchantment, paramDisenchantGUI, paramInt, 100);
-                paramDisenchantGUI.redraw();
-            } else if (paramInventoryClickEvent.getClick() == ClickType.LEFT) {
-                disenchant(enchantment, paramDisenchantGUI, paramInt, 1);
-                paramDisenchantGUI.redraw();
-            } else if (paramInventoryClickEvent.getClick() == ClickType.RIGHT) {
-                disenchant(enchantment, paramDisenchantGUI, paramInt, 10);
-                paramDisenchantGUI.redraw();
-            } else if (paramInventoryClickEvent.getClick() == ClickType.DROP) {
-                disenchantMax(enchantment, paramDisenchantGUI, paramInt);
-            }
-        }, ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.LEFT, ClickType.RIGHT, ClickType.DROP).build() : itemStackBuilder.buildConsumer(paramInventoryClickEvent -> paramInventoryClickEvent.getWhoClicked().sendMessage(this.enchants.getMessage("enchant_cant_disenchant")));
+        itemStackBuilder.name(enchantment.isRefundEnabled() ? enchantment.getName() : "&c&l(!) &cThis enchant can't be disenchanted.");
+        itemStackBuilder.lore(enchantment.isRefundEnabled() ? translateLore(enchantment, this.DISENCHANT_GUI_ITEM_LORE, currentLevel) : new ArrayList<>());
+        return enchantment.isRefundEnabled() ? itemStackBuilder.buildItem().bind(e -> {
+            if (e.getClick() == ClickType.LEFT) disenchant(enchantment, disenchantGUI, currentLevel, 1);
+            else if (e.getClick() == ClickType.RIGHT) disenchant(enchantment, disenchantGUI, currentLevel, 10);
+            else if (e.getClick() == ClickType.MIDDLE || e.getClick() == ClickType.SHIFT_RIGHT) disenchant(enchantment, disenchantGUI, currentLevel, 100);
+            else if (e.getClick() == ClickType.DROP) disenchant(enchantment, disenchantGUI, currentLevel, currentLevel);
+            disenchantGUI.redraw();
+        },  ClickType.LEFT, ClickType.RIGHT, ClickType.MIDDLE, ClickType.SHIFT_RIGHT, ClickType.DROP).build() : itemStackBuilder.buildConsumer(paramInventoryClickEvent -> paramInventoryClickEvent.getWhoClicked().sendMessage(this.enchants.getMessage("enchant_cant_disenchant")));
     }
 
-    public List<String> translateLore(EvilPrisonEnchantment enchantment, List<String> paramList, int paramInt) {
+    public List<String> translateLore(EvilEnchant enchantment, List<String> paramList, int paramInt) {
         ArrayList<String> arrayList = new ArrayList<>();
         for (String str : paramList) {
             if (str.contains("%description%")) {
@@ -345,14 +299,14 @@ public class EnchantsManager {
         return arrayList;
     }
 
-    private long getRefundForLevel(EvilPrisonEnchantment enchantment, int paramInt) {
+    private long getRefundForLevel(EvilEnchant enchantment, int paramInt) {
         return (long)((enchantment.getCost() + enchantment.getIncreaseCost() * (paramInt - 1)) * this.refundPercentage / 100.0D);
     }
 
     public long getPickaxeValue(ItemStack paramItemStack) {
         long l = 0L;
-        HashMap<EvilPrisonEnchantment, Integer> hashMap = getPlayerEnchants(paramItemStack);
-        for (EvilPrisonEnchantment ultraPrisonEnchantment : hashMap.keySet()) {
+        HashMap<EvilEnchant, Integer> hashMap = getPlayerEnchants(paramItemStack);
+        for (EvilEnchant ultraPrisonEnchantment : hashMap.keySet()) {
             for (byte b = 1; b <= hashMap.get(ultraPrisonEnchantment); b++)
                 l += ultraPrisonEnchantment.getCostOfLevel(b);
         }
@@ -381,9 +335,9 @@ public class EnchantsManager {
         for (String str : arrayOfString) {
             String[] arrayOfString1 = str.split("=");
             try {
-                EvilPrisonEnchantment ultraPrisonEnchantment = EvilPrisonEnchantment.getEnchantByName(arrayOfString1[0]);
+                EvilEnchant ultraPrisonEnchantment = EvilEnchant.getEnchantByName(arrayOfString1[0]);
                 if (ultraPrisonEnchantment == null)
-                    ultraPrisonEnchantment = EvilPrisonEnchantment.getEnchantById(Integer.parseInt(arrayOfString1[0]));
+                    ultraPrisonEnchantment = EvilEnchant.getEnchantById(Integer.parseInt(arrayOfString1[0]));
                 if (ultraPrisonEnchantment != null) {
                     int i = Integer.parseInt(arrayOfString1[1]);
                     itemStack = addEnchant(itemStack, ultraPrisonEnchantment.getId(), i);
@@ -417,7 +371,7 @@ public class EnchantsManager {
         for (String str : this.firstJoinPickaxeEnchants) {
             try {
                 String[] arrayOfString = str.split(" ");
-                EvilPrisonEnchantment ultraPrisonEnchantment = EvilPrisonEnchantment.getEnchantByName(arrayOfString[0]);
+                EvilEnchant ultraPrisonEnchantment = EvilEnchant.getEnchantByName(arrayOfString[0]);
                 int i = Integer.parseInt(arrayOfString[1]);
                 itemStack = addEnchant(itemStack, ultraPrisonEnchantment.getId(), i);
             } catch (Exception ignored) {}

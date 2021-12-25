@@ -15,9 +15,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public abstract class EvilPrisonEnchantment implements Refundable {
-    private static HashMap<Integer, EvilPrisonEnchantment> allEnchantmentsById = new HashMap<>();
-    private static HashMap<String, EvilPrisonEnchantment> allEnchantmentsByName = new HashMap<>();
+public abstract class EvilEnchant implements Refundable {
+    private static HashMap<Integer, EvilEnchant> allEnchantmentsById = new HashMap<>();
+    private static HashMap<String, EvilEnchant> allEnchantmentsByName = new HashMap<>();
     protected final Enchants enchants;
     protected final int id;
     private String rawName;
@@ -85,7 +85,7 @@ public abstract class EvilPrisonEnchantment implements Refundable {
         return this.messagesEnabled;
     }
 
-    public EvilPrisonEnchantment(Enchants enchants, int paramInt) {
+    public EvilEnchant(Enchants enchants, int paramInt) {
         this.enchants = enchants;
         this.id = paramInt;
         reloadDefaultAttributes();
@@ -107,7 +107,7 @@ public abstract class EvilPrisonEnchantment implements Refundable {
         this.base64 = this.enchants.getConfig().getString("enchants." + this.id + ".Base64", null);
     }
 
-    public static Collection<EvilPrisonEnchantment> all() {
+    public static Collection<EvilEnchant> all() {
         return allEnchantmentsById.values();
     }
 
@@ -123,11 +123,11 @@ public abstract class EvilPrisonEnchantment implements Refundable {
         return this.enchants.getConfig().getInt("enchants." + this.id + ".Refund.InGuiSlot");
     }
 
-    public static EvilPrisonEnchantment getEnchantById(int paramInt) {
+    public static EvilEnchant getEnchantById(int paramInt) {
         return allEnchantmentsById.get(paramInt);
     }
 
-    public static EvilPrisonEnchantment getEnchantByName(String paramString) {
+    public static EvilEnchant getEnchantByName(String paramString) {
         return allEnchantmentsByName.get(paramString.toLowerCase());
     }
 

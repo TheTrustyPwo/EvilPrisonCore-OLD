@@ -1,7 +1,7 @@
 package me.pwo.evilprisoncore.enchants.enchants.impl;
 
 import me.pwo.evilprisoncore.enchants.Enchants;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.tokens.Tokens;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import me.pwo.evilprisoncore.utils.Utils;
@@ -11,13 +11,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TokenMerchant extends EvilPrisonEnchantment {
+public class TokenMerchant extends EvilEnchant {
     private double chance;
     private long minTokens;
     private long maxTokens;
 
     public TokenMerchant(Enchants enchants) {
-        super(enchants, 11);
+        super(enchants, 6);
     }
 
     @Override

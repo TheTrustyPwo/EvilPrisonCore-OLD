@@ -2,10 +2,9 @@ package me.pwo.evilprisoncore.pickaxe.pickaxeboosters;
 
 import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.EvilPrisonModules;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.pickaxe.Pickaxe;
 import me.pwo.evilprisoncore.pickaxe.pickaxeboosters.model.Booster;
-import me.pwo.evilprisoncore.pickaxe.pickaxerenametoken.PickaxeRenameToken;
 import org.apache.commons.lang3.Range;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,9 +51,9 @@ public class PickaxeBoosters implements EvilPrisonModules {
                     section.getDouble(string + ".Range.Min"),
                     section.getDouble(string + ".Range.Max")
             );
-            List<EvilPrisonEnchantment> blacklistedEnchants = new ArrayList<>();
+            List<EvilEnchant> blacklistedEnchants = new ArrayList<>();
             section.getStringList(string + ".BlacklistedEnchants")
-                    .forEach((enchant) -> blacklistedEnchants.add(EvilPrisonEnchantment.getEnchantByName(enchant)));
+                    .forEach((enchant) -> blacklistedEnchants.add(EvilEnchant.getEnchantByName(enchant)));
             boosters.put(Integer.parseInt(string), new Booster(Integer.parseInt(string), name, lore, material, damage, range, blacklistedEnchants));
             this.plugin.getLogger().info("Loaded Pickaxe Booster: " + string);
         }

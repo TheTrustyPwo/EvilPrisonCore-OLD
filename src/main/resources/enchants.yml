@@ -186,7 +186,24 @@ enchants:
     Refund:
       Enabled: true
       InGuiSlot: 32
-  '10':
+  '6':
+    RawName: "tokenmerchant"
+    Name: '&aToken Merchant'
+    Material: BOOK
+    Enabled: true
+    InGuiSlot: 40
+    Increase-Cost-by: 6
+    Max: 1500
+    Chance: 0.1
+    Max-Tokens: 10000
+    Min-Tokens: 50000
+    Cost: 12
+    Description:
+      - '&7&o(( Ability to gain more tokens while mining ))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 40
+  '7':
     RawName: "shockwave"
     Name: '&bShockwave'
     Material: BOOK
@@ -201,23 +218,6 @@ enchants:
     Refund:
       Enabled: true
       InGuiSlot: 36
-  '11':
-    RawName: "tokenmerchant"
-    Name: '&aToken Merchant'
-    Material: BOOK
-    Enabled: true
-    InGuiSlot: 40
-    Increase-Cost-by: 6
-    Max: 1500
-    Chance: 0.1
-    Max-Tokens: 75
-    Min-Tokens: 35
-    Cost: 12
-    Description:
-      - '&7&o(( Ability to gain more tokens while mining ))'
-    Refund:
-      Enabled: true
-      InGuiSlot: 40
 Pickaxe:
   lore:
     - '&8&m------------------------'

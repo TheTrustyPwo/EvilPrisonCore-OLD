@@ -2,12 +2,11 @@ package me.pwo.evilprisoncore.enchants;
 
 import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
-import me.lucko.helper.event.filter.EventFilters;
 import me.lucko.helper.text3.Text;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.EvilPrisonModules;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.enchants.gui.DisenchantGUI;
 import me.pwo.evilprisoncore.enchants.gui.EnchantGUI;
 import me.pwo.evilprisoncore.enchants.manager.EnchantsManager;
@@ -67,7 +66,7 @@ public class Enchants implements EvilPrisonModules {
         loadMessages();
         registerEvents();
         registerCommands();
-        EvilPrisonEnchantment.loadDefaultEnchantments();
+        EvilEnchant.loadDefaultEnchantments();
     }
 
     @Override
@@ -174,7 +173,9 @@ public class Enchants implements EvilPrisonModules {
                         return;
                     }
                     int i = this.enchantsManager.getInventorySlot(paramCommandContext.sender(), itemStack);
-                    (new DisenchantGUI(paramCommandContext.sender(), itemStack, i)).open();
+                    (new DisenchantGUI(paramCommandContext.sender(),
+                            (int) Math.ceil((float) this.enchantsManager.getPlayerEnchants(itemStack).size() / 9),
+                            itemStack, i)).open();
                 }).registerAndBind(this.plugin, "disenchant", "dise", "de", "disenchantmenu", "dismenu");
         Commands.create()
                 .assertPlayer()

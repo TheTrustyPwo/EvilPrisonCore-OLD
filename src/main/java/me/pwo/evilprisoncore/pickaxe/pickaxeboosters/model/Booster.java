@@ -2,7 +2,7 @@ package me.pwo.evilprisoncore.pickaxe.pickaxeboosters.model;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.lucko.helper.item.ItemStackBuilder;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import org.apache.commons.lang3.Range;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -19,9 +19,9 @@ public class Booster {
     private final Material material;
     private final int damage;
     private final Range<Double> range;
-    private final List<EvilPrisonEnchantment> blacklistedEnchants;
+    private final List<EvilEnchant> blacklistedEnchants;
 
-    public Booster(int id, String name, List<String> lore, Material material, int damage, Range<Double> range, List<EvilPrisonEnchantment> blacklistedEnchants) {
+    public Booster(int id, String name, List<String> lore, Material material, int damage, Range<Double> range, List<EvilEnchant> blacklistedEnchants) {
         this.id = id;
         this.name = name;
         this.lore = lore;
@@ -67,7 +67,7 @@ public class Booster {
         return range;
     }
 
-    public List<EvilPrisonEnchantment> getBlacklistedEnchants() {
+    public List<EvilEnchant> getBlacklistedEnchants() {
         return blacklistedEnchants;
     }
 }

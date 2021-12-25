@@ -1,14 +1,14 @@
 package me.pwo.evilprisoncore.enchants.enchants.impl;
 
 import me.pwo.evilprisoncore.enchants.Enchants;
-import me.pwo.evilprisoncore.enchants.enchants.EvilPrisonEnchantment;
+import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class FortuneEnchant extends EvilPrisonEnchantment {
+public class FortuneEnchant extends EvilEnchant {
     public FortuneEnchant(Enchants enchants) {
         super(enchants, 2);
     }

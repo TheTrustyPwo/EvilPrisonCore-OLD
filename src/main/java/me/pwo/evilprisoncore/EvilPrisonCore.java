@@ -9,6 +9,7 @@ import me.pwo.evilprisoncore.database.Database;
 import me.pwo.evilprisoncore.database.implementations.MySQLDatabase;
 import me.pwo.evilprisoncore.database.implementations.SQLiteDatabase;
 import me.pwo.evilprisoncore.enchants.Enchants;
+import me.pwo.evilprisoncore.events.Events;
 import me.pwo.evilprisoncore.gems.Gems;
 import me.pwo.evilprisoncore.menu.Menu;
 import me.pwo.evilprisoncore.pickaxe.Pickaxe;
@@ -47,6 +48,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private Enchants enchants;
     private Pickaxe pickaxe;
     private Menu menu;
+    private Events events;
 
     public LinkedHashMap<String, EvilPrisonModules> getLoadedModules() {
         return this.loadedModules;
@@ -98,6 +100,14 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         return autoMiner;
     }
 
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public Events getEvents() {
+        return events;
+    }
+
     public static EvilPrisonCore getInstance() {
         return instance;
     }
@@ -134,6 +144,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         this.enchants = new Enchants(this);
         this.pickaxe = new Pickaxe(this);
         this.menu = new Menu(this);
+        this.events = new Events(this);
         if (!setupEconomy()) {
             getLogger().warning("Economy provider for Vault not found! Economy provider is strictly required. Disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
@@ -149,6 +160,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         loadModule(this.enchants);
         loadModule(this.pickaxe);
         loadModule(this.menu);
+        loadModule(this.events);
         registerEvents();
         registerCommands();
         registerPlaceholders();
