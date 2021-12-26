@@ -62,6 +62,10 @@ public class Utils {
         }
     }
 
+    public static String formatNumber(double number) {
+        return String.format("%,.2f", number);
+    }
+
     public static String formatNumber(long number, int type) {
         switch (type) {
             case 1:

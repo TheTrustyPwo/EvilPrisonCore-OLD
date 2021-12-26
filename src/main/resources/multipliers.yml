@@ -1,0 +1,11 @@
+ranks:
+  donator:
+    money: 1.0
+
+global-multiplier:
+  sell:
+    multiplier: 0.0
+    timeLeft: -1
+  tokens:
+    multiplier: 0.0
+    timeLeft: -1

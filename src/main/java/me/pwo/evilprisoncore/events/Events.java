@@ -36,7 +36,7 @@ public class Events implements EvilPrisonModules {
     private void registerCommands() {
         Commands.create()
                 .assertPlayer()
-                .handler(context -> (new EventsGUI(context.sender())).open()).registerAndBind(this.plugin);
+                .handler(context -> (new EventsGUI(context.sender())).open()).registerAndBind(this.plugin, "event", "events");
     }
 
     @Override

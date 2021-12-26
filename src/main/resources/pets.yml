@@ -1,13 +1,15 @@
 item:
   Name: "%name% &7[LVL %level%]"
   Lore:
-    - "&8%tier% Tier"
+    - "%tier% Tier"
     - " "
     - "%secondary%ABILITY"
     - "%description%"
+    - " "
     - "%primary%LEVEL: &f%current-level% / %max-level%"
     - "%primary%EXP: &f%current-exp% / %max-exp%"
-    - "%progress-bar% &7(%progress%)"
+    - "%progress-bar% &7(%progress%%)"
+    - "%enabled%"
 
 pets:
   1:
@@ -17,12 +19,33 @@ pets:
     Secondary-Color: "&a&l"
     Base64: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzk0MmU2YzM4YzNiYjQzY2FhMzhiYTViNDlhNDgwNDdmY2VlYzcwMGNlN2NiMWE3YzFkZTU2OTQxMGYzNWIzOSJ9fX0=
     Description:
-      - "This pet multiplies your money"
+      - "&7This pet multiplies your money"
 
 tiers:
   1:
-    Name: "Common"
-    Max-Level: 25
+    Name: "&a&lCommon"
+    Max-Level: 10
   2:
-    Name: "Uncommon"
+    Name: "&b&lUncommon"
+    Max-Level: 25
+  3:
+    Name: "&e&lUnique"
     Max-Level: 50
+  4:
+    Name: "&9&lRare"
+    Max-Level: 75
+  5:
+    Name: "&5&lEpic"
+    Max-Level: 100
+  6:
+    Name: "&d&lUltimate"
+    Max-Level: 150
+  7:
+    Name: "&6&lLegendary"
+    Max-Level: 200
+  8:
+    Name: "&4&lGodly"
+    Max-Level: 250
+  9:
+    Name: "&c&lEvil"
+    Max-Level: 500

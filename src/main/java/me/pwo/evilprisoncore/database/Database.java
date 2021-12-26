@@ -2,6 +2,7 @@ package me.pwo.evilprisoncore.database;
 
 import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.gangs.gang.Gang;
+import me.pwo.evilprisoncore.multipliers.model.PlayerMultiplier;
 import me.pwo.evilprisoncore.privatemines.mine.Mine;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -77,4 +78,10 @@ public abstract class Database {
     public abstract void revokePlayerPrivateMineAccess(OfflinePlayer owner, OfflinePlayer player);
     
     public abstract List<UUID> getAccessPlayersPrivateMine(OfflinePlayer owner);
+
+    public abstract void removeExpiredMultipliers();
+
+    public abstract PlayerMultiplier getPlayerMultiplier(Player player);
+
+    public abstract void savePlayerMultiplier(Player player, PlayerMultiplier playerMultiplier);
 }

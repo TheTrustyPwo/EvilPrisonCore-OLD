@@ -5,8 +5,10 @@ import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.utils.RegionUtils;
 import me.pwo.evilprisoncore.utils.Utils;
+import net.minecraft.server.v1_12_R1.BlockPosition;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -46,8 +48,9 @@ public class ShockwaveEnchant extends EvilEnchant {
                     }
                 }
             }
-            for (Block block1 : blocks)
+            for (Block block1 : blocks) {
                 Utils.setBlockInNativeDataPalette(block1.getWorld(), block1.getX(), block1.getY(), block1.getZ(), 0, (byte) 0, true);
+            }
             Blocks.getInstance().getApi().addBlocks(e.getPlayer(), blocks.size());
         }
     }
