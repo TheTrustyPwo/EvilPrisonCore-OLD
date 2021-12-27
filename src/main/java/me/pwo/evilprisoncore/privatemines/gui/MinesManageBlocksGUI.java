@@ -4,6 +4,7 @@ import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.menu.Gui;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.privatemines.PrivateMines;
+import me.pwo.evilprisoncore.privatemines.gui.MinesGUI;
 import me.pwo.evilprisoncore.ranks.Ranks;
 import me.pwo.evilprisoncore.utils.SkullUtils;
 import org.bukkit.Material;
@@ -30,7 +31,7 @@ public class MinesManageBlocksGUI extends Gui {
                     (new MinesGUI(getPlayer())).open();
                 }, ClickType.LEFT).build());
         int slot = 9;
-        for (Material material : Ranks.getInstance().getRankManager().getUnlockedBlocks(Ranks.getInstance().getApi().getPlayerRank(getPlayer()).getId())) {
+        /* for (Material material : Ranks.getInstance().getRankManager().getUnlockedBlocks(Ranks.getInstance().getApi().getPlayerRank(getPlayer()).getId())) {
             if (PrivateMines.getInstance().getMines().get(getPlayer().getUniqueId()).getMaterial().equals(material)) {
                 setItem(slot, ItemStackBuilder.of(material)
                         .name(Text.colorize("&6") + material.name())
@@ -52,6 +53,6 @@ public class MinesManageBlocksGUI extends Gui {
                         }, ClickType.LEFT).build());
             }
             slot++;
-        }
+        } */
     }
 }

@@ -35,7 +35,7 @@ public class MinesPlayerManagementGUI extends Gui {
 
                 }, ClickType.LEFT).build());
         // Toggle Public Access
-        String publicAccess = PrivateMines.getInstance().getMines().get(getPlayer().getUniqueId()).isPublic()
+        /* String publicAccess = PrivateMines.getInstance().getMines().get(getPlayer().getUniqueId()).isPublic()
                 ? Text.colorize("&a&lON") : Text.colorize("&c&lOFF");
         setItem(12, ItemStackBuilder.of(SkullUtils.TOGGLE_PUBLIC_ACCESS_GUI_ITEM)
                 .name(Text.colorize("&d&lPublic Access: ") + publicAccess)
@@ -79,6 +79,6 @@ public class MinesPlayerManagementGUI extends Gui {
                         Text.colorize("&7Click to remove a Miner from your Mine")))
                 .buildItem().bind(e -> {
                     
-                }, ClickType.LEFT).build());
+                }, ClickType.LEFT).build()); */
     }
 }

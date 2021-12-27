@@ -6,7 +6,7 @@ authors:
 prefix: EvilPrisonCore
 main: me.pwo.evilprisoncore.EvilPrisonCore
 description: A PrisonCore
-depend: [Vault, WorldGuard, WorldEdit, helper, NBTAPI]
+depend: [Vault, WorldGuard, WorldEdit, helper]
 softdepend:
   - PlaceholderAPI
   - JetsPrisonMines

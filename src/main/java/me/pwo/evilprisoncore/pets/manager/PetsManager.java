@@ -15,6 +15,8 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,10 +38,15 @@ public class PetsManager {
 
     public PetsManager(Pets pets) {
         this.pets = pets;
+        Events.subscribe(BlockPlaceEvent.class)
+                .filter(e -> e.getItemInHand() != null && e.getItemInHand().getType() == Material.SKULL_ITEM)
+                .filter(e -> (new NBTItem(e.getItemInHand())).hasKey(PET_NBT_IDENTIFIER))
+                .handler(e -> e.setCancelled(true));
+        Events.subscribe(PlayerDropItemEvent.class)
+                .filter(e -> e.getItemDrop() != null && e.getItemDrop().getItemStack().getType() == Material.SKULL_ITEM)
+                .filter(e -> (new NBTItem(e.getItemDrop().getItemStack())).getBoolean(PET_ENABLED_NBT_IDENTIFIER))
+                .handler(e -> e.setCancelled(true));
         loadPetTiers();
-        Events.subscribe(PlayerJoinEvent.class)
-                .filter(e -> e.getPlayer().getName().equalsIgnoreCase("TheTrustyPwo"))
-                .handler(e -> givePet(e.getPlayer(), EvilPet.getPetById(1), 0, 1, this.petTiers.get(1))).bindWith(this.pets.getPlugin());
         reload();
     }
 

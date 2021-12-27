@@ -43,7 +43,7 @@ public class MinesGUI extends Gui {
                     (new MinesPlayerManagementGUI(getPlayer())).open();
                 }, ClickType.LEFT).build());
         // Teleport To Mine
-        setItem(22, ItemStackBuilder.of(SkullUtils.TELEPORT_TO_MINE_GUI_ITEM)
+        /* setItem(22, ItemStackBuilder.of(SkullUtils.TELEPORT_TO_MINE_GUI_ITEM)
                 .name(Text.colorize("&3&lTeleport to Mine"))
                 .lore(Arrays.asList(Text.colorize("&7Click to teleport to your Mine")))
                 .buildItem().bind(e -> {
@@ -61,7 +61,7 @@ public class MinesGUI extends Gui {
                     close();
                     PrivateMines.getInstance().getMines().get(getPlayer().getUniqueId()).reset();
                     PlayerUtils.sendMessage(getPlayer(), "&aYour Mine has been reset!");
-                }, ClickType.LEFT).build());
+                }, ClickType.LEFT).build()); */
         // Manage Blocks
         setItem(24, ItemStackBuilder.of(SkullUtils.MANAGE_BLOCKS_GUI_ITEM)
                 .name(Text.colorize("&5&lManage Mine Blocks"))

@@ -12,9 +12,11 @@ import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.events.Events;
 import me.pwo.evilprisoncore.gems.Gems;
 import me.pwo.evilprisoncore.menu.Menu;
+import me.pwo.evilprisoncore.multipliers.Multipliers;
 import me.pwo.evilprisoncore.pets.Pets;
 import me.pwo.evilprisoncore.pickaxe.Pickaxe;
 import me.pwo.evilprisoncore.placeholders.EvilPrisonPAPIPlaceholders;
+import me.pwo.evilprisoncore.privatemines.PrivateMines;
 import me.pwo.evilprisoncore.ranks.Ranks;
 import me.pwo.evilprisoncore.tokens.Tokens;
 import me.pwo.evilprisoncore.utils.FileUtils;
@@ -25,7 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -51,6 +52,8 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private Menu menu;
     private Events events;
     private Pets pets;
+    private Multipliers multipliers;
+    private PrivateMines privateMines;
 
     public LinkedHashMap<String, EvilPrisonModules> getLoadedModules() {
         return this.loadedModules;
@@ -114,6 +117,14 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         return pets;
     }
 
+    public Multipliers getMultiplier() {
+        return multipliers;
+    }
+
+    public PrivateMines getPrivateMines() {
+        return privateMines;
+    }
+
     public static EvilPrisonCore getInstance() {
         return instance;
     }
@@ -152,6 +163,8 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         this.menu = new Menu(this);
         this.events = new Events(this);
         this.pets = new Pets(this);
+        this.multipliers = new Multipliers(this);
+        this.privateMines = new PrivateMines(this);
         if (!setupEconomy()) {
             getLogger().warning("Economy provider for Vault not found! Economy provider is strictly required. Disabling plugin...");
             getServer().getPluginManager().disablePlugin(this);
@@ -169,6 +182,8 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         loadModule(this.menu);
         loadModule(this.events);
         loadModule(this.pets);
+        loadModule(this.multipliers);
+        loadModule(this.privateMines);
         registerEvents();
         registerCommands();
         registerPlaceholders();

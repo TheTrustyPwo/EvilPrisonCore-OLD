@@ -67,18 +67,6 @@ public abstract class Database {
 
     public abstract void removeExpiredAutoMiners();
 
-    public abstract List<Mine> getAllMineData();
-
-    public abstract Mine getPlayerMineData(OfflinePlayer player);
-
-    public abstract void addIntoMineData(OfflinePlayer player);
-
-    public abstract void givePlayerPrivateMineAccess(OfflinePlayer owner, OfflinePlayer player);
-
-    public abstract void revokePlayerPrivateMineAccess(OfflinePlayer owner, OfflinePlayer player);
-    
-    public abstract List<UUID> getAccessPlayersPrivateMine(OfflinePlayer owner);
-
     public abstract void removeExpiredMultipliers();
 
     public abstract PlayerMultiplier getPlayerMultiplier(Player player);

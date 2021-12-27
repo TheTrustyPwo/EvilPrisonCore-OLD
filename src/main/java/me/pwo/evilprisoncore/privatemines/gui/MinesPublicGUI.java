@@ -28,7 +28,7 @@ public class MinesPublicGUI extends Gui {
 
     }
 
-    private void getPlayerMineGuiItem(OfflinePlayer player) {
+    /* private void getPlayerMineGuiItem(OfflinePlayer player) {
         Item item = ItemStackBuilder.of(SkullCreator.itemFromUuid(getPlayer().getUniqueId()))
                 .name("&6%player%'s Mine".replaceAll("%player%", player.getName()))
                 .lore(Arrays.asList(
@@ -47,5 +47,5 @@ public class MinesPublicGUI extends Gui {
                     close();
 
                 }, ClickType.LEFT).build();
-    }
+    } */
 }

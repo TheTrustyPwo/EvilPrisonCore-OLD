@@ -15,7 +15,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 public class PrivateMinesWorldManager {
-    private PrivateMines privateMines;
+    private final PrivateMines privateMines;
     private static final int minesDistance = 200;
     private int distance;
     private Direction direction;
@@ -29,15 +29,19 @@ public class PrivateMinesWorldManager {
     }
 
     private void createMinesWorld() {
-        this.minesWorld = Bukkit.createWorld(new WorldCreator("privatemines")
+        this.minesWorld = Bukkit.createWorld(new WorldCreator("private-mines")
                 .type(WorldType.FLAT)
                 .generator(new VoidWorldGenerator()));
-        this.globalRegion = WorldGuardWrapper.getInstance().getRegion(this.minesWorld, "__global__").get();
-        this.globalRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("build", WrappedState.class).get(), WrappedState.DENY);
-        this.globalRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("interact", WrappedState.class).get(), WrappedState.DENY);
-        this.globalRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("use", WrappedState.class).get(), WrappedState.DENY);
         this.direction = Direction.NORTH;
         this.defaultLocation = new Location(this.minesWorld, 0.0D, 50.0D, 0.0D);
+        if (WorldGuardWrapper.getInstance().getRegion(this.minesWorld, "__global__").isPresent()) {
+            this.globalRegion = WorldGuardWrapper.getInstance().getRegion(this.minesWorld, "__global__").get();
+            this.globalRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("build", WrappedState.class).get(), WrappedState.DENY);
+            this.globalRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("interact", WrappedState.class).get(), WrappedState.DENY);
+            this.globalRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("use", WrappedState.class).get(), WrappedState.DENY);
+        } else {
+            this.privateMines.getPlugin().getLogger().warning("The global region is somehow null.");
+        }
     }
 
     public synchronized Location getNextFreeLocation() {

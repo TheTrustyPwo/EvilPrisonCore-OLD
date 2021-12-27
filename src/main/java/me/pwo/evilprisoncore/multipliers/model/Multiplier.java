@@ -47,16 +47,12 @@ public class Multiplier {
         return "&7(&f" + l2 + "d " + l3 + "h " + l4 + "m " + l5 + "s" + "&7)";
     }
 
-    public void setMultiplier(double paramDouble1, double paramDouble2) {
-        this.multiplier = Math.min(paramDouble1, paramDouble2);
+    public void setMultiplier(double paramDouble1) {
+        this.multiplier = paramDouble1;
     }
 
-    public void addMultiplier(double paramDouble1, double paramDouble2) {
-        if (this.multiplier + paramDouble1 > paramDouble2) {
-            this.multiplier = paramDouble2;
-        } else {
-            this.multiplier += paramDouble1;
-        }
+    public void addMultiplier(double paramDouble1) {
+        this.multiplier += paramDouble1;
     }
 
     public boolean isExpired() {
@@ -71,5 +67,11 @@ public class Multiplier {
     public void addDuration(TimeUnit paramTimeUnit, int paramInt) {
         this.startTime = System.currentTimeMillis();
         this.endTime = (this.endTime == 0L) ? (System.currentTimeMillis() + paramTimeUnit.toMillis(paramInt)) : (this.endTime + paramTimeUnit.toMillis(paramInt));
+    }
+
+    public void reset() {
+        this.multiplier = 0.0D;
+        this.startTime = 0L;
+        this.endTime = 0L;
     }
 }
