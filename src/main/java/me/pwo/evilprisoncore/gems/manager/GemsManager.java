@@ -7,6 +7,7 @@ import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.scheduler.Task;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.gems.Gems;
+import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -104,9 +105,13 @@ public class GemsManager {
     public void giveGems(OfflinePlayer player, long amount, boolean applyMultiplier) {
         Schedulers.async().run(() -> {
             long playerGems = getPlayerGems(player);
-            // boolean multiEnabled = this.gems.getPlugin().isModuleEnabled("Multipliers");
-            // if (multiEnabled && player.isOnline() && applyMultiplier)
-            //     amount = (long)this.gems.getPlugin().getMultipliers().getApi().getTotalToDeposit((Player)player, amount, MultiplierType.GEMS);
+            if (player.isOnline() && applyMultiplier) {
+                long total = (long) this.gems.getPlugin().getMultipliers().getApi().getTotalToDeposit((Player) player, amount, MultiplierType.GEMS);
+                if (player.isOnline())
+                    this.gemsCache.replace(player.getUniqueId(), this.gemsCache.getOrDefault(player.getUniqueId(), 0L) + total);
+                else this.gems.getPlugin().getPluginDatabase().updatePlayerTokens(player, total + playerGems);
+                return;
+            }
             if (player.isOnline())
                 this.gemsCache.replace(player.getUniqueId(), this.gemsCache.getOrDefault(player.getUniqueId(), 0L) + amount);
             else this.gems.getPlugin().getPluginDatabase().updatePlayerGems(player, amount + playerGems);

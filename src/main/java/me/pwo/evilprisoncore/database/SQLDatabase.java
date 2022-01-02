@@ -3,15 +3,10 @@ package me.pwo.evilprisoncore.database;
 import com.zaxxer.hikari.HikariDataSource;
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.time.Time;
-import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.gangs.gang.Gang;
+import me.pwo.evilprisoncore.multipliers.enums.MultiplierSource;
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
 import me.pwo.evilprisoncore.multipliers.model.Multiplier;
-import me.pwo.evilprisoncore.multipliers.model.MultiplierSet;
-import me.pwo.evilprisoncore.multipliers.model.PlayerMultiplier;
-import me.pwo.evilprisoncore.privatemines.mine.Mine;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -30,9 +25,9 @@ public abstract class SQLDatabase extends Database {
     protected static final AtomicInteger POOL_COUNTER = new AtomicInteger(0);
     protected static final int MAXIMUM_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2 + 1;
     protected static final int MINIMUM_IDLE = Math.min(MAXIMUM_POOL_SIZE, 10);
-    protected static final long MAX_LIFETIME = TimeUnit.MINUTES.toMillis(30L);
-    protected static final long CONNECTION_TIMEOUT = TimeUnit.SECONDS.toMillis(60L);
-    protected static final long LEAK_DETECTION_THRESHOLD = TimeUnit.SECONDS.toMillis(5L);
+    protected static final long MAX_LIFETIME = TimeUnit.DAYS.toMillis(1L);
+    protected static final long CONNECTION_TIMEOUT = TimeUnit.MINUTES.toMillis(60L);
+    protected static final long LEAK_DETECTION_THRESHOLD = TimeUnit.SECONDS.toMillis(10L);
 
     public SQLDatabase(EvilPrisonCore evilPrisonCore) {
         super(evilPrisonCore);
@@ -123,7 +118,7 @@ public abstract class SQLDatabase extends Database {
 
     public Map getTop10Ranks() {
         LinkedHashMap<Object, Object> linkedHashMap = new LinkedHashMap<>();
-        try(Connection connection = this.hikari.getConnection(); ResultSet resultSet = connection.prepareStatement("SELECT * FROM EvilPrison_Ranks ORDER BY Rank DESC LIMIT 10").executeQuery()) {
+        try (Connection connection = this.hikari.getConnection(); ResultSet resultSet = connection.prepareStatement("SELECT * FROM EvilPrison_Ranks ORDER BY Rank DESC LIMIT 10").executeQuery()) {
             while (resultSet.next())
                 linkedHashMap.put(UUID.fromString(resultSet.getString("UUID")), resultSet.getInt("Rank"));
         } catch (SQLException sQLException) {
@@ -274,7 +269,7 @@ public abstract class SQLDatabase extends Database {
     }
 
     public void removeExpiredAutoMiners() {
-        try(Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM EvilPrison_AutoMiner WHERE Time <= 0")) {
+        try (Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM EvilPrison_AutoMiner WHERE Time <= 0")) {
             preparedStatement.execute();
         } catch (SQLException sQLException) {
             sQLException.printStackTrace();
@@ -282,7 +277,7 @@ public abstract class SQLDatabase extends Database {
     }
 
     public int getPlayerAutoMinerTime(OfflinePlayer paramOfflinePlayer) {
-        try(Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM EvilPrison_AutoMiner WHERE UUID=?")) {
+        try (Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM EvilPrison_AutoMiner WHERE UUID=?")) {
             preparedStatement.setString(1, paramOfflinePlayer.getUniqueId().toString());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next())
@@ -295,7 +290,7 @@ public abstract class SQLDatabase extends Database {
     }
 
     public void saveAutoMiner(Player paramPlayer, int paramInt) {
-        try(Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO EvilPrison_AutoMiner VALUES (?,?) ON DUPLICATE KEY UPDATE Time=?")) {
+        try (Connection connection = this.hikari.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO EvilPrison_AutoMiner VALUES (?,?) ON DUPLICATE KEY UPDATE Time=?")) {
             preparedStatement.setString(1, paramPlayer.getUniqueId().toString());
             preparedStatement.setInt(2, paramInt);
             preparedStatement.setInt(3, paramInt);
@@ -307,55 +302,61 @@ public abstract class SQLDatabase extends Database {
 
     @Override
     public void removeExpiredMultipliers() {
-        for (MultiplierType multiplierType : MultiplierType.values()) {
-            try (Connection connection = this.hikari.getConnection()) {
-                connection.prepareStatement(
-                        "DELETE FROM EvilPrison_Multiplier_" + multiplierType.toString() +" WHERE TimeLeft<" + Time.nowMillis()).execute();
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
-            }
+        try (Connection connection = this.hikari.getConnection()) {
+            connection.prepareStatement(
+                    "DELETE FROM EvilPrison_Multipliers WHERE TimeLeft<" + Time.nowMillis()).execute();
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
     }
 
     @Override
-    public PlayerMultiplier getPlayerMultiplier(Player player) {
-        HashMap<MultiplierType, Multiplier> hashMap = new HashMap<>();
-        for (MultiplierType multiplierType : MultiplierType.values()) {
-            try (Connection connection = this.hikari.getConnection()) {
-                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM EvilPrison_Multiplier_" + multiplierType.toString() + " WHERE UUID=?");
-                preparedStatement.setString(1, player.getUniqueId().toString());
-                try(ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) hashMap.put(multiplierType, new Multiplier(
+    public List<Multiplier> getPlayerMultipliers(Player player) {
+        List<Multiplier> list = new ArrayList<>();
+        try (Connection connection = this.hikari.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM EvilPrison_Multipliers WHERE UUID=?");
+            preparedStatement.setString(1, player.getUniqueId().toString());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    list.add(new Multiplier(
+                            resultSet.getInt("ID"),
                             resultSet.getDouble("Multiplier"),
                             resultSet.getLong("TimeLeft"),
-                            multiplierType));
+                            MultiplierType.valueOf(resultSet.getString("Type")),
+                            MultiplierSource.valueOf(resultSet.getString("Source"))));
                 }
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
             }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
-        return new PlayerMultiplier(player.getUniqueId(),
-                new MultiplierSet(
-                        hashMap.get(MultiplierType.MONEY),
-                        hashMap.get(MultiplierType.TOKENS),
-                        hashMap.get(MultiplierType.GEMS),
-                        hashMap.get(MultiplierType.EXP)));
+        System.out.println(list);
+        return list;
     }
 
     @Override
-    public void savePlayerMultiplier(Player player, PlayerMultiplier playerMultiplier) {
-        for (MultiplierType multiplierType : MultiplierType.values()) {
-            try (Connection connection = this.hikari.getConnection()) {
-                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO EvilPrison_Multiplier_" + multiplierType.toString() + " VALUES(?,?,?) ON DUPLICATE KEY UPDATE Multiplier=?, TimeLeft=?");
-                preparedStatement.setString(1, player.getUniqueId().toString());
-                preparedStatement.setDouble(2, playerMultiplier.getMultiplierSet().getMulti(multiplierType).getMultiplier());
-                preparedStatement.setLong(3, playerMultiplier.getMultiplierSet().getMulti(multiplierType).getEndTime());
-                preparedStatement.setDouble(4, playerMultiplier.getMultiplierSet().getMulti(multiplierType).getMultiplier());
-                preparedStatement.setLong(5, playerMultiplier.getMultiplierSet().getMulti(multiplierType).getEndTime());
+    public void savePlayerMultipliers(Player player, List<Multiplier> multipliers) {
+        try (Connection connection = this.hikari.getConnection()) {
+            System.out.println(multipliers);
+            for (Multiplier multiplier : multipliers) {
+                PreparedStatement preparedStatement;
+                if (multiplier.getId() == null) {
+                    preparedStatement = connection.prepareStatement(
+                            "INSERT INTO EvilPrison_Multipliers (UUID, Multiplier, TimeLeft, Type, Source) VALUES (?,?,?,?,?)");
+                    preparedStatement.setString(1, player.getUniqueId().toString());
+                    preparedStatement.setDouble(2, multiplier.getMultiplier());
+                    preparedStatement.setLong(3, multiplier.getEndTime());
+                    preparedStatement.setString(4, multiplier.getMultiplierType().name());
+                    preparedStatement.setString(5, multiplier.getMultiplierSource().name());
+                } else {
+                    preparedStatement = connection.prepareStatement(
+                            "UPDATE EvilPrison_Multipliers SET TimeLeft=? WHERE ID=?");
+                    preparedStatement.setLong(1, multiplier.getEndTime());
+                    preparedStatement.setInt(2, multiplier.getId());
+                }
                 preparedStatement.execute();
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
             }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
         }
     }
 

@@ -20,22 +20,22 @@ public class MoneyPet extends EvilPet {
 
     @Override
     public void onEnable(Player player, ItemStack itemStack, int level) {
-        this.pets.getPlugin().getMultiplier().getApi().addPlayerMultiplier(player, level * 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
+        this.pets.getPlugin().getMultipliers().getApi().addPlayerMultiplier(player, level * 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
     }
 
     @Override
     public void onDisable(Player player, ItemStack itemStack, int level) {
-        this.pets.getPlugin().getMultiplier().getApi().removePlayerMultiplier(player, level * 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
+        this.pets.getPlugin().getMultipliers().getApi().removePlayerMultiplier(player, level * 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
     }
 
     @Override
     public void onLevelUp(Player player, ItemStack itemStack, int level) {
-        this.pets.getPlugin().getMultiplier().getApi().addPlayerMultiplier(player, 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
+        this.pets.getPlugin().getMultipliers().getApi().addPlayerMultiplier(player, 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
     }
 
     @Override
     public void onTierUp(Player player, ItemStack itemStack, PetTier tier) {
-        this.pets.getPlugin().getMultiplier().getApi().removePlayerMultiplier(player, (tier.getMaxLevel() - 1) * 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
+        this.pets.getPlugin().getMultipliers().getApi().removePlayerMultiplier(player, (tier.getMaxLevel() - 1) * 0.1, TimeUnit.DAYS, Integer.MAX_VALUE, MultiplierType.MONEY);
     }
 
     @Override

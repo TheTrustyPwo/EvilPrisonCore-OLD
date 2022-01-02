@@ -5,9 +5,7 @@ authors:
   - Stucknight
 prefix: EvilPrisonCore
 main: me.pwo.evilprisoncore.EvilPrisonCore
-description: A PrisonCore
-depend: [Vault, WorldGuard, WorldEdit, helper]
+description: The core of the Evil Prison
+depend: [Vault, WorldGuard, WorldEdit, helper, FastAsyncWorldEdit]
 softdepend:
   - PlaceholderAPI
-  - JetsPrisonMines
-  - Multiverse-Core

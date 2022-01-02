@@ -1,0 +1,5 @@
+whitelisted-worlds:
+  - private-mines
+
+items:
+  STONE: 1.0

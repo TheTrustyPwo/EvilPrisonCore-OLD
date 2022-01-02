@@ -1,13 +1,10 @@
 package me.pwo.evilprisoncore.database;
 
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.gangs.gang.Gang;
-import me.pwo.evilprisoncore.multipliers.model.PlayerMultiplier;
-import me.pwo.evilprisoncore.privatemines.mine.Mine;
+import me.pwo.evilprisoncore.multipliers.model.Multiplier;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -69,7 +66,7 @@ public abstract class Database {
 
     public abstract void removeExpiredMultipliers();
 
-    public abstract PlayerMultiplier getPlayerMultiplier(Player player);
+    public abstract List<Multiplier> getPlayerMultipliers(Player player);
 
-    public abstract void savePlayerMultiplier(Player player, PlayerMultiplier playerMultiplier);
+    public abstract void savePlayerMultipliers(Player player, List<Multiplier> multipliers);
 }

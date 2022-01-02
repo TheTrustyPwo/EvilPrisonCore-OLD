@@ -3,6 +3,7 @@ package me.pwo.evilprisoncore;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.autominer.AutoMiner;
+import me.pwo.evilprisoncore.autosell.AutoSell;
 import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.credits.Credits;
 import me.pwo.evilprisoncore.database.Database;
@@ -20,7 +21,6 @@ import me.pwo.evilprisoncore.privatemines.PrivateMines;
 import me.pwo.evilprisoncore.ranks.Ranks;
 import me.pwo.evilprisoncore.tokens.Tokens;
 import me.pwo.evilprisoncore.utils.FileUtils;
-import me.pwo.evilprisoncore.utils.MinecraftVersion;
 import me.pwo.evilprisoncore.utils.SkullUtils;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -42,6 +42,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private Economy economy;
 
     private AutoMiner autoMiner;
+    private AutoSell autoSell;
     private Blocks blocks;
     private Tokens tokens;
     private Gems gems;
@@ -71,6 +72,10 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
 
     public Economy getEconomy() {
         return economy;
+    }
+
+    public AutoSell getAutoSell() {
+        return autoSell;
     }
 
     public Blocks getBlocks() {
@@ -117,7 +122,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         return pets;
     }
 
-    public Multipliers getMultiplier() {
+    public Multipliers getMultipliers() {
         return multipliers;
     }
 
@@ -130,7 +135,6 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     }
 
     protected void enable() {
-        MinecraftVersion.init();
         SkullUtils.init();
         instance = this;
         this.loadedModules = new LinkedHashMap<>();
@@ -153,6 +157,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         }
         this.pickaxesSupported = Collections.singletonList(Material.DIAMOND_PICKAXE);
         this.autoMiner = new AutoMiner(this);
+        this.autoSell = new AutoSell(this);
         this.blocks = new Blocks(this);
         this.tokens = new Tokens(this);
         this.gems = new Gems(this);
@@ -172,6 +177,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         }
         getLogger().info("Economy provider for Vault found - " + getEconomy().getName());
         loadModule(this.autoMiner);
+        loadModule(this.autoSell);
         loadModule(this.blocks);
         loadModule(this.tokens);
         loadModule(this.gems);

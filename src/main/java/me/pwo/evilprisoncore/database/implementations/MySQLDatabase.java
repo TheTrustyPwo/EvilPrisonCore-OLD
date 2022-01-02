@@ -29,14 +29,15 @@ public class MySQLDatabase extends SQLDatabase {
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setPoolName("evilprison-" + POOL_COUNTER.getAndIncrement());
         hikariConfig.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
-        hikariConfig.setConnectionTestQuery("SELECT 1");
         hikariConfig.setUsername(this.username);
         hikariConfig.setPassword(this.password);
+        hikariConfig.addDataSourceProperty( "cachePrepStmts" , "true" );
+        hikariConfig.addDataSourceProperty( "prepStmtCacheSize" , "250" );
+        hikariConfig.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
         hikariConfig.setMinimumIdle(MINIMUM_IDLE);
         hikariConfig.setMaxLifetime(MAX_LIFETIME);
         hikariConfig.setConnectionTimeout(CONNECTION_TIMEOUT);
         hikariConfig.setMaximumPoolSize(MAXIMUM_POOL_SIZE);
-        hikariConfig.setLeakDetectionThreshold(LEAK_DETECTION_THRESHOLD);
         this.hikari = new HikariDataSource(hikariConfig);
         createTables();
     }
@@ -51,10 +52,7 @@ public class MySQLDatabase extends SQLDatabase {
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Gems(UUID varchar(36) NOT NULL UNIQUE, Gems bigint, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Credits(UUID varchar(36) NOT NULL UNIQUE, Credits bigint, PRIMARY KEY (UUID))");
             execute("CREATE TABLE IF NOT EXISTS EvilPrison_Ranks(UUID varchar(36) NOT NULL UNIQUE, Rank bigint, PRIMARY KEY (UUID))");
-            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Multipliers_MONEY(UUID varchar(36) NOT NULL UNIQUE, Multiplier DOUBLE, TimeLeft LONG, PRIMARY KEY (UUID))");
-            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Multipliers_TOKENS(UUID varchar(36) NOT NULL UNIQUE, Multiplier DOUBLE, TimeLeft LONG, PRIMARY KEY (UUID))");
-            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Multipliers_GEMS(UUID varchar(36) NOT NULL UNIQUE, Multiplier DOUBLE, TimeLeft LONG, PRIMARY KEY (UUID))");
-            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Multipliers_EXP(UUID varchar(36) NOT NULL UNIQUE, Multiplier DOUBLE, TimeLeft LONG, PRIMARY KEY (UUID))");
+            execute("CREATE TABLE IF NOT EXISTS EvilPrison_Multipliers(ID int NOT NULL AUTO_INCREMENT, UUID varchar(36) NOT NULL, Multiplier double(12, 2), TimeLeft bigint, Type varchar(36), Source varchar(36), PRIMARY KEY (ID))");
         });
     }
 }

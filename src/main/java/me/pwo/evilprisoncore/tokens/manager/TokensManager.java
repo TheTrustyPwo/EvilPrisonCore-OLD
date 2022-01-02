@@ -6,6 +6,7 @@ import me.lucko.helper.Schedulers;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.scheduler.Task;
 import me.lucko.helper.utils.Players;
+import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
 import me.pwo.evilprisoncore.tokens.Tokens;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.Material;
@@ -41,8 +42,7 @@ public class TokensManager {
         Events.subscribe(PlayerJoinEvent.class)
                 .handler(e -> Schedulers.async().run(() -> {
                     this.tokens.getPlugin().getPluginDatabase().addIntoTokens(e.getPlayer());
-                    this.tokensCache.put(e.getPlayer().getUniqueId(),
-                            this.tokens.getPlugin().getPluginDatabase().getPlayerTokens(e.getPlayer()));
+                    this.tokensCache.put(e.getPlayer().getUniqueId(), this.tokens.getPlugin().getPluginDatabase().getPlayerTokens(e.getPlayer()));
                 })).bindWith(tokens.getPlugin());
         Events.subscribe(PlayerQuitEvent.class)
                 .handler(e -> savePlayerData(e.getPlayer(), true, true)).bindWith(tokens.getPlugin());
@@ -104,9 +104,13 @@ public class TokensManager {
     public void giveTokens(OfflinePlayer player, long amount, boolean applyMultiplier) {
         Schedulers.async().run(() -> {
             long playerTokens = getPlayerTokens(player);
-            // boolean multiEnabled = this.tokens.getPlugin().isModuleEnabled("Multipliers");
-            // if (multiEnabled && player.isOnline() && applyMultiplier)
-            //     amount = (long)this.tokens.getPlugin().getMultipliers().getApi().getTotalToDeposit((Player)player, amount, MultiplierType.TOKENS);
+            if (player.isOnline() && applyMultiplier) {
+                long total = (long) this.tokens.getPlugin().getMultipliers().getApi().getTotalToDeposit((Player) player, amount, MultiplierType.TOKENS);
+                if (player.isOnline())
+                    this.tokensCache.replace(player.getUniqueId(), this.tokensCache.getOrDefault(player.getUniqueId(), 0L) + total);
+                else this.tokens.getPlugin().getPluginDatabase().updatePlayerTokens(player, total + playerTokens);
+                return;
+            }
             if (player.isOnline())
                 this.tokensCache.replace(player.getUniqueId(), this.tokensCache.getOrDefault(player.getUniqueId(), 0L) + amount);
             else this.tokens.getPlugin().getPluginDatabase().updatePlayerTokens(player, amount + playerTokens);

@@ -1,14 +1,19 @@
 package me.pwo.evilprisoncore.enchants.enchants.impl;
 
+import com.boydti.fawe.FaweAPI;
+import com.boydti.fawe.util.EditSessionBuilder;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.MaxChangedBlocksException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
+import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
+import me.pwo.evilprisoncore.privatemines.worldedit.WorldEditUtil;
 import me.pwo.evilprisoncore.utils.RegionUtils;
-import me.pwo.evilprisoncore.utils.Utils;
-import net.minecraft.server.v1_12_R1.BlockPosition;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -45,11 +50,22 @@ public class ShockwaveEnchant extends EvilEnchant {
                 for (int z = iCuboidSelection.getMinimumPoint().getBlockZ(); z <= iCuboidSelection.getMaximumPoint().getBlockZ(); z++) {
                     if (block.getWorld().getBlockAt(x, block.getY(), z).getType() != Material.AIR) {
                         blocks.add(block.getWorld().getBlockAt(x, block.getY(), z));
+                        if (this.enchants.getPlugin().getAutoSell().hasAutoSellEnabled(e.getPlayer())) {
+                            totalProfit += this.enchants.getPlugin().getAutoSell().getPriceForBrokenBlock(block.getType());
+                        }
                     }
                 }
             }
-            for (Block block1 : blocks) {
-                Utils.setBlockInNativeDataPalette(block1.getWorld(), block1.getX(), block1.getY(), block1.getZ(), 0, (byte) 0, true);
+            double money = this.enchants.getPlugin().getMultipliers().getApi().getTotalToDeposit(e.getPlayer(), totalProfit * fortuneLevel, MultiplierType.MONEY);
+            this.enchants.getPlugin().getEconomy().depositPlayer(e.getPlayer(), money);
+            try {
+                EditSession session = (new EditSessionBuilder(FaweAPI.getWorld(block.getWorld().getName()))).fastmode(true).build();
+                session.setBlocks(new CuboidRegion(
+                        WorldEditUtil.toWEVector(iCuboidSelection.getMinimumPoint()).setY(block.getY()),
+                        WorldEditUtil.toWEVector(iCuboidSelection.getMaximumPoint()).setY(block.getY())), new BaseBlock(Material.AIR.getId()));
+                session.flushQueue();
+            } catch (MaxChangedBlocksException maxChangedBlocksException) {
+                maxChangedBlocksException.printStackTrace();
             }
             Blocks.getInstance().getApi().addBlocks(e.getPlayer(), blocks.size());
         }

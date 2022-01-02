@@ -1,14 +1,15 @@
 package me.pwo.evilprisoncore.multipliers.api;
 
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
-import me.pwo.evilprisoncore.multipliers.model.PlayerMultiplier;
+import me.pwo.evilprisoncore.multipliers.model.Multiplier;
 import me.pwo.evilprisoncore.multipliers.model.RankMultiplier;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public interface MultipliersAPI {
-    PlayerMultiplier getPlayerMultiplier(Player player);
+    List<Multiplier> getPlayerMultiplier(Player player);
 
     void addPlayerMultiplier(Player player, double multi, TimeUnit timeUnit, int time, MultiplierType type);
 
@@ -16,7 +17,5 @@ public interface MultipliersAPI {
 
     RankMultiplier getRankMultiplier(Player player);
 
-    default double getTotalToDeposit(Player player, double deposit, MultiplierType type) {
-        return deposit * (1.0D + getPlayerMultiplier(player).getMultiplierSet().getMulti(type).getMultiplier());
-    }
+    double getTotalToDeposit(Player player, double deposit, MultiplierType type);
 }

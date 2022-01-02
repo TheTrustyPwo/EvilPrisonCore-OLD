@@ -1,52 +1,80 @@
 package me.pwo.evilprisoncore.privatemines.manager;
 
+import com.boydti.fawe.FaweAPI;
+import com.boydti.fawe.util.EditSessionBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.blocks.BaseBlock;
+import com.google.gson.reflect.TypeToken;
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldedit.data.DataException;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.schematic.SchematicFormat;
-import me.lucko.helper.Events;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.registry.WorldData;
+import me.lucko.helper.Schedulers;
+import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.privatemines.PrivateMines;
 import me.pwo.evilprisoncore.privatemines.mine.Mine;
-import me.pwo.evilprisoncore.privatemines.mine.data.MineData;
-import me.pwo.evilprisoncore.privatemines.worldedit.MineFactoryCompat;
-import org.bukkit.Bukkit;
+import me.pwo.evilprisoncore.privatemines.worldedit.WorldEditUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.codemc.worldguardwrapper.WorldGuardWrapper;
 import org.codemc.worldguardwrapper.flag.WrappedState;
 import org.codemc.worldguardwrapper.region.IWrappedRegion;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 @SuppressWarnings("deprecation")
 public class PrivateMinesManager {
+    private static final Pattern dataFilePattern = Pattern.compile("(.*?)\\.(json)");
+    private final Gson gson;
     private final PrivateMines privateMines;
-    private final MineFactoryCompat<S> compat;
-    private HashMap<UUID, Mine> mines;
+    private final World world;
+    private final Map<UUID, Mine> mines = new HashMap<>();
     private File privateMinesDirectory;
-    private File minesFile;
+    private Clipboard mineSchematic;
 
-    public PrivateMinesManager(PrivateMines privateMines, MineFactoryCompat<S> compat) {
+    public File getPrivateMinesDirectory() {
+        return privateMinesDirectory;
+    }
+
+    public PrivateMinesManager(PrivateMines privateMines) {
         this.privateMines = privateMines;
-        this.compat = compat;
-        this.minesFile = new File(this.privateMines.getPlugin().getDataFolder(), "mine.schematic");
+        this.world = this.privateMines.getPrivateMinesWorldManager().getMinesWorld();
+        loadMineSchematic();
+        this.gson = new Gson();
         loadPrivateMinesDirectory();
-        Events.subscribe(PlayerJoinEvent.class)
-                .filter(e -> e.getPlayer().getName().equalsIgnoreCase("TheTrustyPwo"))
-                .handler(e -> createMine(e.getPlayer(), this.privateMines.getPrivateMinesWorldManager().getNextFreeLocation()));
+        loadAllMines();
+        Schedulers.async().runRepeating(this::saveAllMines, 10L, TimeUnit.MINUTES, 10L, TimeUnit.MINUTES);
+    }
+
+    private void loadMineSchematic() {
+        try {
+            File minesFile = new File(this.privateMines.getPlugin().getDataFolder(), "mine.schematic");
+            ClipboardReader reader = ClipboardFormat.findByFile(minesFile).getReader(new FileInputStream(minesFile));
+            this.mineSchematic = reader.read((new BukkitWorld(this.world)).getWorldData());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadPrivateMinesDirectory() {
@@ -55,86 +83,160 @@ public class PrivateMinesManager {
             this.privateMines.getPlugin().getLogger().info("Created mines directory successfully.");
     }
 
-
-    private Mine createMine(Player player, Location location) {
-        try {
-            Location spawnLocation = null;
-            List<Location> mineCorners = new ArrayList<>();
-            EditSession editSession = new EditSession(new BukkitWorld(location.getWorld()), -1);
-            SchematicFormat schematic = SchematicFormat.getFormat(minesFile);
-            CuboidClipboard clipboard = schematic.load(minesFile);
-            clipboard.paste(editSession, BukkitUtil.toVector(location), true);
-            for (int x = 0; x < clipboard.getLength(); x++)
-                for (int y = 0; y < clipboard.getHeight(); y++)
-                    for (int z = 0; z < clipboard.getWidth(); z++) {
-                        try {
-                            BaseBlock block = clipboard.getBlock(new Vector(x, y, z));
-                            if (block == null || block.getType() == Material.AIR.getId()) continue;
-                            if (block.getType() == Material.CHEST.getId()) {
-                                Vector vector = clipboard.getOrigin().add(x, y, z);
-                                spawnLocation = new Location(Bukkit.getWorld("privatemines"), vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
-                            } else if (block.getType() == Material.POWERED_RAIL.getId()) {
-                                Vector vector = clipboard.getOrigin().add(x, y, z);
-                                mineCorners.add(new Location(Bukkit.getWorld("privatemines"), vector.getBlockX(), vector.getBlockY(), vector.getBlockZ()));
-                            }
-                        } catch (ArrayIndexOutOfBoundsException ignored) {}
-                    }
-            if (spawnLocation == null || mineCorners.size() < 2) {
-                this.privateMines.getPlugin().getLogger().warning("Failed to create mine due to spawn location or mine corners not set.");
-                return null;
+    private void loadAllMines() {
+        File[] files = this.privateMinesDirectory.listFiles();
+        if (files == null) return;
+        Arrays.stream(files).forEach(file -> {
+            if (file.getName().matches(String.valueOf(dataFilePattern))) {
+                try {
+                    BufferedReader bufferedReader = Files.newBufferedReader(file.toPath());
+                    Type type = new TypeToken<Map<String, Object>>(){}.getType();
+                    Mine mine = deserialize(this.gson.fromJson(bufferedReader, type));
+                    this.mines.put(mine.getOwner(), mine);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
-            MineData mineData = new MineData();
-            Mine mine = new Mine(this.privateMines);
+        });
+        this.privateMines.getPlugin().getLogger().info(String.format("Loaded mines for %,d players.", this.mines.size()));
+    }
 
-            Location mineCorner1 = mineCorners.get(0);
-            Location mineCorner2 = mineCorners.get(1);
-            BlockVector blockVector1 = new BlockVector(mineCorner1.getBlockX(), mineCorner1.getBlockY(), mineCorner1.getBlockZ());
-            BlockVector blockVector2 = new BlockVector(mineCorner2.getBlockX(), mineCorner2.getBlockY(), mineCorner2.getBlockZ());
-            CuboidRegion cuboidRegion = new CuboidRegion(blockVector1, blockVector2);
-            spawnLocation.getBlock().setType(Material.AIR, false);
+    public void saveAllMines() {
+        this.mines.forEach((owner, mine) -> {
+            try {
+                File file = new File(getPrivateMinesDirectory(), owner.toString() + ".json");
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(this.gson.toJson(serialize(mine)));
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        this.privateMines.getPlugin().getLogger().info("Saved all mines data.");
+    }
 
-            mine.setOwner(player.getUniqueId());
-            mine.setMineCuboidRegion(cuboidRegion);
-            mine.setSpawnLocation(spawnLocation);
-            mine.setMaterial(Material.STONE);
-
-            mineData.setMineOwner(player.getUniqueId());
-            mineData.setSpawnX(spawnLocation.getX());
-            mineData.setSpawnY(spawnLocation.getY());
-            mineData.setSpawnZ(spawnLocation.getZ());
-            mineData.setMineMinX(mineCorner1.getBlockX());
-            mineData.setMineMinY(mineCorner1.getBlockY());
-            mineData.setMineMinZ(mineCorner1.getBlockZ());
-            mineData.setMineMaxX(mineCorner2.getBlockX());
-            mineData.setMineMaxY(mineCorner2.getBlockY());
-            mineData.setMineMaxZ(mineCorner2.getBlockZ());
-            mineData.setRegionMinX(clipboard.getOrigin().getBlockX());
-            mineData.setRegionMinY(clipboard.getOrigin().getBlockY());
-            mineData.setRegionMinZ(clipboard.getOrigin().getBlockZ());
-            mineData.setRegionMaxX(clipboard.getOrigin().add(clipboard.getSize()).getBlockX());
-            mineData.setRegionMaxY(clipboard.getOrigin().add(clipboard.getSize()).getBlockY());
-            mineData.setRegionMaxZ(clipboard.getOrigin().add(clipboard.getSize()).getBlockZ());
-            mineData.setPublic(false);
-            mineData.setTax(1.0D);
-            mineData.setMaterial(Material.STONE.toString());
-            mineData.setSize(5);
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-            File dataFile = new File(this.privateMinesDirectory, player.getUniqueId() + ".json");
-            FileWriter fileWriter = new FileWriter(dataFile);
-            fileWriter.write(gson.toJson(mineData));
+    public void savePlayerMine(OfflinePlayer player) {
+        Mine mine = this.mines.get(player.getUniqueId());
+        if (mine == null) return;
+        try {
+            File file = new File(getPrivateMinesDirectory(), player.getUniqueId().toString() + ".json");
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(this.gson.toJson(serialize(mine)));
             fileWriter.close();
-            IWrappedRegion mineRegion = WorldGuardWrapper.getInstance().addCuboidRegion("mine-" + player.getUniqueId(), mineCorner1, mineCorner2)
-                    .orElseThrow(() -> new RuntimeException(" "));
-            mineRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("block-place", WrappedState.class).get(), WrappedState.DENY);
-            mineRegion.setFlag(WorldGuardWrapper.getInstance().getFlag("block-break", WrappedState.class).get(), WrappedState.ALLOW);
-            mine.setMineRegion(mineRegion);
-            mine.load();
-            mine.reset();
-            this.privateMines.getPlugin().getLogger().info(String.format("Created private mine for %s.", player.getName()));
-            return mine;
-        } catch (DataException | IOException | MaxChangedBlocksException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private Map<String, Object> serialize(Mine mine) {
+        Map<String, Object> map = new TreeMap<>();
+        map.put("Owner", mine.getOwner());
+        map.put("Public", mine.isPublic());
+        map.put("Material", mine.getMaterial().name());
+        map.put("Spawn", mine.getSpawnLocation().serialize());
+        map.put("Center", mine.getCenter().serialize());
+        map.put("MainCorner1", WorldEditUtil.toBukkitVector(mine.getMainRegion().getMinimumPoint()).serialize());
+        map.put("MainCorner2", WorldEditUtil.toBukkitVector(mine.getMainRegion().getMaximumPoint()).serialize());
+        map.put("Size", mine.getMineSize());
+        map.put("Tax", mine.getTax());
+        map.put("BannedPlayers", mine.getBannedPlayers());
+        map.put("WhitelistedPlayers", mine.getWhitelistedPlayers());
+        return map;
+    }
+
+    private Mine deserialize(Map<String, Object> map) {
+        UUID owner = UUID.fromString(map.get("Owner").toString());
+        boolean isPublic = (boolean) map.get("Public");
+        Material material = Material.getMaterial((String) map.get("Material"));
+        Location spawnLocation = Location.deserialize((Map<String, Object>) map.get("Spawn"));
+        Location center = Location.deserialize((Map<String, Object>) map.get("Center"));
+        org.bukkit.util.Vector mainCorner1 = org.bukkit.util.Vector.deserialize((Map<String, Object>) map.get("MainCorner1"));
+        org.bukkit.util.Vector mainCorner2 = org.bukkit.util.Vector.deserialize((Map<String, Object>) map.get("MainCorner2"));
+        int size = gson.fromJson(map.get("Size").toString(), int.class);
+        double tax = gson.fromJson(map.get("Tax").toString(), double.class);
+        Type setType = new TypeToken<HashSet<String>>(){}.getType();
+        Set<UUID> bannedPlayers = new HashSet<>(9);
+        Set<UUID> whitelistedPlayers = new HashSet<>(9);
+        ((Set<String>) gson.fromJson(map.get("BannedPlayers").toString(), setType)).forEach(string -> bannedPlayers.add(UUID.fromString(string)));
+        ((Set<String>) gson.fromJson(map.get("WhitelistedPlayers").toString(), setType)).forEach(string -> bannedPlayers.add(UUID.fromString(string)));
+        return new Mine(owner, spawnLocation, center,
+                new CuboidRegion(new BukkitWorld(this.world), WorldEditUtil.toWEVector(mainCorner1), WorldEditUtil.toWEVector(mainCorner2))
+                ,size, isPublic, material, tax, bannedPlayers, whitelistedPlayers);
+    }
+
+    public Mine getPlayerMine(UUID uuid) {
+        return this.mines.get(uuid);
+    }
+
+    public Map<UUID, Mine> getAllMines() {
+        return mines;
+    }
+
+    public void createMine(Player player) {
+        createMine(player, this.privateMines.getPrivateMinesWorldManager().getNextFreeLocation());
+    }
+
+    public Mine createMine(Player player, Location location) {
+        try {
+            WorldData worldData = (new BukkitWorld(this.world)).getWorldData();
+            EditSession editSession = (new EditSessionBuilder(FaweAPI.getWorld(this.world.getName()))).fastmode(true).build();
+            Vector vector = BukkitUtil.toVector(location);
+            Clipboard clipboard = this.mineSchematic;
+            Operation operation = new ClipboardHolder(clipboard, worldData)
+                    .createPaste(editSession, worldData).to(vector).ignoreAirBlocks(true).build();
+            Operations.complete(operation);
+            editSession.flushQueue();
+            Region clipboardRegion = clipboard.getRegion();
+            clipboardRegion.shift(vector.subtract(clipboard.getOrigin()));
+            Location spawnLocation = null;
+            Location center = null;
+            int tries = 0;
+            while ((spawnLocation == null || center == null) && tries <= 3) {
+                for (BlockVector blockVector : clipboardRegion) {
+                    if (spawnLocation != null && center != null) break;
+                    Block block = world.getBlockAt(blockVector.getBlockX(), blockVector.getBlockY(), blockVector.getBlockZ());
+                    Material material = block.getType();
+                    if (material == Material.AIR) continue;
+                    if (spawnLocation == null && material == Material.CHEST) {
+                        spawnLocation = new Location(world, blockVector.getBlockX() + 0.5D, blockVector.getBlockY() + 0.5D, blockVector.getBlockZ() + 0.5D);
+                        block.setType(Material.AIR);
+                    } else if (material == Material.FURNACE) center = WorldEditUtil.toLocation(blockVector, world);
+                }
+                if (spawnLocation == null || center == null) {
+                    this.privateMines.getPlugin().getLogger().warning(Text.colorize("&cCould not find SPAWN or CENTER location! Retrying... (%tries%/3)"
+                            .replaceAll("%tries%", String.valueOf(tries))));
+                    tries++;
+                }
+            }
+            CuboidRegion mainRegion = new CuboidRegion(new BukkitWorld(this.world),
+                    clipboardRegion.getMinimumPoint().setY(0), clipboardRegion.getMaximumPoint().setY(this.world.getMaxHeight()));
+            IWrappedRegion worldGuardMainRegion = WorldGuardWrapper.getInstance().addCuboidRegion(
+                            player.getUniqueId().toString(),
+                            WorldEditUtil.toLocation(mainRegion.getMinimumPoint(), world),
+                            WorldEditUtil.toLocation(mainRegion.getMaximumPoint(), world))
+                    .orElseThrow(() -> new RuntimeException("Could not create Main WorldGuard region"));
+            worldGuardMainRegion.getOwners().addPlayer(player.getUniqueId());
+            WorldGuardWrapper w = WorldGuardWrapper.getInstance();
+            Stream.of(w.getFlag("block-place", WrappedState.class),
+                            w.getFlag("block-break", WrappedState.class))
+                    .filter(Optional::isPresent).map(Optional::get).forEach((flag) -> worldGuardMainRegion.setFlag(flag, WrappedState.ALLOW));
+            Mine mine = new Mine(player.getUniqueId(), spawnLocation, center, mainRegion, 11, false, Material.STONE,
+                    1.0D, new HashSet<>(), new HashSet<>());
+            try {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                File file = new File(getPrivateMinesDirectory(),
+                        player.getUniqueId() + ".json");
+                FileWriter fileWriter = new FileWriter(file);
+                fileWriter.write(gson.toJson(serialize(mine)));
+                fileWriter.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            this.mines.put(player.getUniqueId(), mine);
+            return mine;
+        } catch (WorldEditException ioException) {
+            ioException.printStackTrace();
         } return null;
     }
 }

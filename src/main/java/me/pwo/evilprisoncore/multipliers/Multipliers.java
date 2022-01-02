@@ -5,10 +5,19 @@ import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.EvilPrisonModules;
 import me.pwo.evilprisoncore.multipliers.api.MultipliersAPI;
 import me.pwo.evilprisoncore.multipliers.api.MultipliersAPIImpl;
+import me.pwo.evilprisoncore.multipliers.command.MultipliersCommand;
+import me.pwo.evilprisoncore.multipliers.command.MultipliersGiveCommand;
+import me.pwo.evilprisoncore.multipliers.gui.MultipliersGUI;
 import me.pwo.evilprisoncore.multipliers.manager.MultipliersManager;
-import me.pwo.evilprisoncore.multipliers.model.PlayerMultiplier;
+import me.pwo.evilprisoncore.privatemines.command.PrivateMinesCommand;
+import me.pwo.evilprisoncore.privatemines.gui.MinesGUI;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Multipliers implements EvilPrisonModules {
     private static Multipliers instance;
@@ -16,6 +25,7 @@ public class Multipliers implements EvilPrisonModules {
     private MultipliersManager multipliersManager;
     private MultipliersAPI multipliersAPI;
     private FileConfiguration multipliersConfig;
+    private Map<String, MultipliersCommand> commands;
     private boolean enabled;
 
     public static Multipliers getInstance() {
@@ -53,16 +63,29 @@ public class Multipliers implements EvilPrisonModules {
     }
 
     private void registerCommands() {
+        this.commands = new HashMap<>();
+        this.commands.put("give", new MultipliersGiveCommand(this));
         Commands.create()
-                .assertPlayer()
-                .handler(context -> {
-                    PlayerMultiplier multi = this.multipliersManager.getPlayerMultiplier(context.sender());
-                    PlayerUtils.sendMessage(context.sender(),
-                            "a" + multi.getMultiplierSet().getMoneyMulti().getMultiplier()
-                                    + multi.getMultiplierSet().getTokenMulti().getMultiplier() +
-                                    multi.getMultiplierSet().getGemsMulti().getMultiplier() +
-                                    multi.getMultiplierSet().getExpMulti().getMultiplier());
-                }).registerAndBind(this.plugin, "multiplier", "multi");
+                .tabHandler(context -> {
+                    if (context.args().size() == 1) {
+                        return this.commands.keySet().stream()
+                                .filter(cmd -> this.commands.get(cmd).canExecute(context.sender())).collect(Collectors.toList());
+                    }
+                    MultipliersCommand command = this.commands.get(context.rawArg(0));
+                    if (command != null) if (command.canExecute(context.sender()))
+                        return command.onTabComplete(context.sender(), context.args().subList(1, context.args().size()));
+                    return null;
+                }).handler(context -> {
+                    if (context.args().size() == 0 && context.sender() instanceof Player) {
+                        (new MultipliersGUI((Player) context.sender())).open();
+                        return;
+                    }
+                    MultipliersCommand command = this.commands.get(context.rawArg(0));
+                    if (command != null) if (command.canExecute(context.sender()))
+                        command.execute(context.sender(), context.args().subList(1, context.args().size()));
+                    else PlayerUtils.sendMessage(context.sender(), "&c&l(!) &cNo Permission");
+                    else (new MultipliersGUI((Player) context.sender())).open();
+                }).registerAndBind(this.plugin, "multipliers", "multiplier", "multis", "multi");
     }
 
     @Override

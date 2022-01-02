@@ -1,5 +1,7 @@
 package me.pwo.evilprisoncore.multipliers.model;
 
+import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
+
 public class RankMultiplier {
     protected final double moneyMulti;
     protected final double tokensMulti;
@@ -27,5 +29,14 @@ public class RankMultiplier {
 
     public double getExpMulti() {
         return expMulti;
+    }
+
+    public double getMulti(MultiplierType multiplierType) {
+        switch (multiplierType) {
+            case MONEY: return getMoneyMulti();
+            case TOKENS: return getTokensMulti();
+            case GEMS: return getGemsMulti();
+            case EXP: return getExpMulti();
+        } return 0.0D;
     }
 }

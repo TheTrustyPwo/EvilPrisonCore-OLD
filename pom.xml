@@ -100,7 +100,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>me.lucko</groupId>
+            <groupId>internal</groupId>
             <artifactId>helper</artifactId>
             <version>5.6.8</version>
             <scope>provided</scope>
@@ -138,6 +138,7 @@
             <groupId>internal</groupId>
             <artifactId>fawe</artifactId>
             <version>1.12.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.grinderwolf</groupId>
