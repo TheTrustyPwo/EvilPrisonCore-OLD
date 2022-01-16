@@ -23,7 +23,7 @@ public class PrisonMenuGUI extends Gui {
             for (byte slot = 0; slot < getHandle().getSize(); slot++)
                 setItem(slot, ItemStackBuilder.of(Material.STAINED_GLASS_PANE).data(7).buildItem().build());
         // Server Links
-        setItem(48, ItemStackBuilder.of(SkullUtils.SERVER_LINKS_GUI_ITEM)
+        setItem(48, ItemStackBuilder.of(SkullUtils.SERVER_LINKS_GUI_ITEM.clone())
                 .name(Text.colorize("&9&lServer Links"))
                 .lore(Arrays.asList(
                         Text.colorize("&bDiscord: &fevilkingdom.net/discord"),
@@ -43,14 +43,14 @@ public class PrisonMenuGUI extends Gui {
 
                 }, ClickType.LEFT).build());
         // Vote Button
-        setItem(50, ItemStackBuilder.of(SkullUtils.VOTE_BUTTON_GUI_ITEM)
+        setItem(50, ItemStackBuilder.of(SkullUtils.VOTE_BUTTON_GUI_ITEM.clone())
                 .name(Text.colorize("&6&lVote"))
                 .lore(Arrays.asList(Text.colorize("&7Click to vote for the server")))
                 .buildItem().bind(e -> {
 
                 }, ClickType.LEFT).build());
         // Settings Button
-        setItem(51, ItemStackBuilder.of(SkullUtils.SETTINGS_BUTTON_GUI_ITEM)
+        setItem(51, ItemStackBuilder.of(SkullUtils.SETTINGS_BUTTON_GUI_ITEM.clone())
                 .name(Text.colorize("&4&lSettings"))
                 .lore(Arrays.asList(Text.colorize("&7Click to manage your settings.")))
                 .buildItem().bind(e -> {
