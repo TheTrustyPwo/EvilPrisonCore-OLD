@@ -1,10 +1,12 @@
 package me.pwo.evilprisoncore.database;
 
 import me.pwo.evilprisoncore.EvilPrisonCore;
+import me.pwo.evilprisoncore.gangs.gang.Gang;
 import me.pwo.evilprisoncore.multipliers.model.Multiplier;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,6 +15,8 @@ public abstract class Database {
     protected final EvilPrisonCore plugin;
 
     public Database(EvilPrisonCore evilPrisonCore) { this.plugin = evilPrisonCore; }
+
+    public abstract int getNextAutoIncrementValue(String tableName);
 
     public abstract long getPlayerTokens(OfflinePlayer player);
 
@@ -69,4 +73,12 @@ public abstract class Database {
     public abstract List<Multiplier> getPlayerMultipliers(Player player);
 
     public abstract void savePlayerMultipliers(Player player, List<Multiplier> multipliers);
+
+    public abstract List<Gang> getAllGangs();
+
+    public abstract void updateGang(Gang gang);
+
+    public abstract void deleteGang(Gang gang);
+
+    public abstract void createGang(Gang gang);
 }
