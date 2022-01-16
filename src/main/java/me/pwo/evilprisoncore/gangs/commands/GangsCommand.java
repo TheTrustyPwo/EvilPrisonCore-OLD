@@ -1,18 +1,22 @@
 package me.pwo.evilprisoncore.gangs.commands;
 
 import com.google.common.collect.ImmutableList;
-import me.pwo.evilprisoncore.gangs.Gangs;
+import me.pwo.evilprisoncore.gangs.EvilPrisonGangs;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public abstract class GangsCommand {
-    protected Gangs gangs;
+    protected EvilPrisonGangs evilPrisonGangs;
     public static final String GANGS_ADMIN_PERMISSION = "evilprison.gangs.admin";
         
-    public GangsCommand(Gangs gangs) {
-        this.gangs = gangs;
+    public GangsCommand(EvilPrisonGangs evilPrisonGangs) {
+        this.evilPrisonGangs = evilPrisonGangs;
     }
 
-    public abstract boolean execute(CommandSender paramCommandSender, ImmutableList<String> paramImmutableList);
+    public abstract boolean execute(CommandSender sender, ImmutableList<String> list);
 
-    public abstract boolean canExecute(CommandSender paramCommandSender);
+    public abstract boolean canExecute(CommandSender sender);
+
+    public abstract List<String> onTabComplete(CommandSender sender, ImmutableList<String> list);
 }
