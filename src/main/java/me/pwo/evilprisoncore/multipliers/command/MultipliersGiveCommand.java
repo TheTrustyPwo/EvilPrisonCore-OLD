@@ -5,7 +5,6 @@ import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.multipliers.Multipliers;
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierSource;
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
-import me.pwo.evilprisoncore.multipliers.model.Multiplier;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import me.pwo.evilprisoncore.utils.Utils;
 import org.bukkit.command.CommandSender;
@@ -13,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +23,7 @@ public class MultipliersGiveCommand extends MultipliersCommand {
 
     @Override
     public boolean execute(CommandSender sender, ImmutableList<String> list) {
-        if (list.size() == 4 || list.size() == 5) {
+        if (list.size() == 5 || list.size() == 6) {
             try {
                 Player target = Players.getNullable(list.get(0));
                 if (target == null) {
@@ -31,10 +31,11 @@ public class MultipliersGiveCommand extends MultipliersCommand {
                     return false;
                 }
                 double amount = Utils.round(Double.parseDouble(list.get(1)), 2);
-                long time = Long.parseLong(list.get(2));
-                MultiplierType type = MultiplierType.valueOf(list.get(3));
-                MultiplierSource source = list.size() == 5 ? MultiplierSource.valueOf(list.get(4)) : MultiplierSource.MISCELLANEOUS;
-                this.multipliers.getMultipliersManager().givePlayerMultiplier(target, amount, time, type, source);
+                int time = Integer.parseInt(list.get(2));
+                TimeUnit timeUnit = TimeUnit.valueOf(list.get(3));
+                MultiplierType type = MultiplierType.valueOf(list.get(4));
+                MultiplierSource source = list.size() == 6 ? MultiplierSource.valueOf(list.get(5)) : MultiplierSource.MISCELLANEOUS;
+                this.multipliers.getMultipliersManager().givePlayerMultiplier(target, amount, timeUnit, time, type, source);
                 PlayerUtils.sendMessage(sender, "done");
             } catch (NumberFormatException numberFormatException) {
                 PlayerUtils.sendMessage(sender, "&c&l(!) &cInvalid Number");
@@ -55,8 +56,9 @@ public class MultipliersGiveCommand extends MultipliersCommand {
         if (list.size() == 1) return null;
         else if (list.size() == 2) return Arrays.asList("1.0", "2.0", "3.0");
         else if (list.size() == 3) return Arrays.asList("60", "1800", "3600", "7200");
-        else if (list.size() == 4) return Stream.of(MultiplierType.values()).map(MultiplierType::name).collect(Collectors.toList());
-        else if (list.size() == 5) return Stream.of(MultiplierSource.values()).map(MultiplierSource::name).collect(Collectors.toList());
+        else if (list.size() == 4) return Stream.of(TimeUnit.values()).map(TimeUnit::name).collect(Collectors.toList());
+        else if (list.size() == 5) return Stream.of(MultiplierType.values()).map(MultiplierType::name).collect(Collectors.toList());
+        else if (list.size() == 6) return Stream.of(MultiplierSource.values()).map(MultiplierSource::name).collect(Collectors.toList());
         return null;
     }
 }

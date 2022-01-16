@@ -112,6 +112,9 @@ public class MultipliersViewGUI extends Gui {
                         .replaceAll("%source%", multiplier.getMultiplierSource().name()))
                 .lore(
                         " ",
+                        "%primary%ID: &f%id%"
+                                .replaceAll("%primary%", primary)
+                                .replaceAll("%id%", Utils.formatNumber(multiplier.getId())),
                         "%primary%MULTIPLIER: &fx%multi%"
                                 .replaceAll("%primary%", primary)
                                 .replaceAll("%multi%", Utils.formatNumber(multiplier.getMultiplier())),

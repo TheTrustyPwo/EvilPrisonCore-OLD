@@ -6,15 +6,15 @@ import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
 import java.util.concurrent.TimeUnit;
 
 public class Multiplier {
-    protected final Integer id;
+    protected final int id;
     protected double multiplier;
     protected long startTime;
-    protected long endTime = 0L;
+    protected long endTime;
     protected MultiplierType multiplierType;
     protected MultiplierSource multiplierSource;
     protected boolean isPermanent;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -42,12 +42,22 @@ public class Multiplier {
         return isPermanent;
     }
 
-    public Multiplier(Integer id, double multiplier, long endTime, MultiplierType multiplierType, MultiplierSource multiplierSource) {
+    public Multiplier(int id, double multiplier, long endTime, MultiplierType multiplierType, MultiplierSource multiplierSource) {
         this.id = id;
         this.multiplier = multiplier;
         this.startTime = System.currentTimeMillis();
-        addDuration(TimeUnit.SECONDS, endTime);
+        this.endTime = endTime;
         this.isPermanent = endTime == -1L;
+        this.multiplierType = multiplierType;
+        this.multiplierSource = multiplierSource;
+    }
+
+    public Multiplier(int id, double multiplier, TimeUnit timeUnit, int time, MultiplierType multiplierType, MultiplierSource multiplierSource) {
+        this.id = id;
+        this.multiplier = multiplier;
+        this.startTime = System.currentTimeMillis();
+        this.endTime = timeUnit.toMillis(time);
+        this.isPermanent = time == -1L;
         this.multiplierType = multiplierType;
         this.multiplierSource = multiplierSource;
     }

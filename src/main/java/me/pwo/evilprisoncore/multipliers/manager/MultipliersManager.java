@@ -7,7 +7,9 @@ import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.multipliers.Multipliers;
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierSource;
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
-import me.pwo.evilprisoncore.multipliers.model.*;
+import me.pwo.evilprisoncore.multipliers.model.GlobalMultiplier;
+import me.pwo.evilprisoncore.multipliers.model.Multiplier;
+import me.pwo.evilprisoncore.multipliers.model.RankMultiplier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -21,9 +23,10 @@ public class MultipliersManager {
     private final Multipliers multipliers;
     private GlobalMultiplier globalSellMultiplier;
     private GlobalMultiplier globalTokenMultiplier;
-    private HashMap<UUID, RankMultiplier> rankMultipliers = new HashMap<>();
-    private HashMap<UUID, List<Multiplier>> playerMultipliers = new HashMap<>();
+    private final HashMap<UUID, RankMultiplier> rankMultipliers = new HashMap<>();
+    private final HashMap<UUID, List<Multiplier>> playerMultipliers = new HashMap<>();
     private LinkedHashMap<String, RankMultiplier> permissionToMultiplier = new LinkedHashMap<>();
+    private int idCounter;
     private Task rankUpdateTask;
 
     public MultipliersManager(Multipliers multipliers) {
@@ -36,6 +39,10 @@ public class MultipliersManager {
         removeExpiredMultipliers();
         loadOnlineMultipliers();
         updateRankMultiplier();
+    }
+
+    private void loadIdCounter() {
+        this.idCounter = this.multipliers.getPlugin().getPluginDatabase().getNextAutoIncrementValue("EvilPrison_Multipliers");
     }
 
     private void updateRankMultiplier() {
@@ -107,10 +114,24 @@ public class MultipliersManager {
         });
     }
 
-    public void givePlayerMultiplier(Player player, double amount, long endTime, MultiplierType multiplierType, MultiplierSource multiplierSource) {
+    public void addPlayerMultiplier(Player player, int id, double multi, TimeUnit timeUnit, int time) {
+         Multiplier multiplier = this.playerMultipliers.get(player.getUniqueId()).stream().filter(m -> m.getId() == id)
+                .collect(Collectors.toList()).get(0);
+         multiplier.addMultiplier(multi);
+         multiplier.addDuration(timeUnit, time);
+    }
+
+    public void givePlayerMultiplier(Player player, double amount, TimeUnit timeUnit, int time, MultiplierType multiplierType, MultiplierSource multiplierSource) {
         this.playerMultipliers.get(player.getUniqueId()).add(
-                new Multiplier(null, amount, endTime, multiplierType, multiplierSource)
+                new Multiplier(++this.idCounter,
+                        amount, timeUnit, time, multiplierType, multiplierSource)
         );
+    }
+
+    public void deletePlayerMultiplier(Player player, int id) {
+        this.playerMultipliers.get(player.getUniqueId()).remove(this.playerMultipliers.get(player.getUniqueId())
+                .stream().filter(multiplier -> multiplier.getId() == id)
+                        .collect(Collectors.toList()).get(0));
     }
 
     public List<Multiplier> getPlayerMultipliers(Player player) {
