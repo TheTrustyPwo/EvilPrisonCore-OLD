@@ -131,10 +131,10 @@ enchants:
       InGuiSlot: 27
   '2':
     RawName: "fortune"
-    Name: '&cFortune'
-    Material: BOOK
+    Name: '&f&lFortune'
+    Material: EMERALD
     Enabled: true
-    InGuiSlot: 29
+    InGuiSlot: 28
     Increase-Cost-by: 75
     Max: -1
     Chance: 100
@@ -143,13 +143,13 @@ enchants:
       - '&7&o(( Ability to receive more blocks while mining ))'
     Refund:
       Enabled: true
-      InGuiSlot: 29
+      InGuiSlot: 28
   '3':
     RawName: "haste"
-    Name: '&dHaste'
-    Material: BOOK
+    Name: '&b&lHaste'
+    Material: SUGAR
     Enabled: true
-    InGuiSlot: 30
+    InGuiSlot: 29
     Increase-Cost-by: 2500
     Max: 5
     Cost: 2500
@@ -157,11 +157,11 @@ enchants:
       - '&7&o(( Ability to swing your pickaxe faster while mining ))'
     Refund:
       Enabled: true
-      InGuiSlot: 30
+      InGuiSlot: 29
   '4':
     RawName: "speed"
     Name: '&aSpeed'
-    Material: BOOK
+    Material: GLOWSTONE_DUST
     Enabled: true
     InGuiSlot: 31
     Increase-Cost-by: 10000
@@ -175,7 +175,7 @@ enchants:
   '5':
     RawName: "jumpboost"
     Name: '&bJump Boost'
-    Material: BOOK
+    Material: RABBIT_HIDE
     Enabled: true
     InGuiSlot: 32
     Increase-Cost-by: 5000
@@ -189,9 +189,9 @@ enchants:
   '6':
     RawName: "tokenmerchant"
     Name: '&aToken Merchant'
-    Material: BOOK
+    Material: GOLD_BLOCK
     Enabled: true
-    InGuiSlot: 40
+    InGuiSlot: 41
     Increase-Cost-by: 6
     Max: 1500
     Chance: 0.1
@@ -202,11 +202,11 @@ enchants:
       - '&7&o(( Ability to gain more tokens while mining ))'
     Refund:
       Enabled: true
-      InGuiSlot: 40
+      InGuiSlot: 41
   '7':
     RawName: "shockwave"
     Name: '&bShockwave'
-    Material: BOOK
+    Material: END_CRYSTAL
     Enabled: true
     Chance: 0.1
     InGuiSlot: 36
@@ -218,33 +218,182 @@ enchants:
     Refund:
       Enabled: true
       InGuiSlot: 36
+  '8':
+    RawName: "keyfinder"
+    Name: '&bKeyFinder'
+    Material: TRIPWIRE_HOOK
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 39
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Commands:
+      - tokens give %player% 100
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 39
+  '9':
+    RawName: "nuke"
+    Name: '&bNuke'
+    Material: BLAZE_POWDER
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 37
+    Increase-Cost-by: 10
+    Max: 100
+    Cost: 200
+    Description:
+      - '&7&o(( Ability to break nuke the entire mine while mining ))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 37
+  '10':
+    RawName: "lightning"
+    Name: '&bLightning'
+    Material: PRISMARINE_SHARD
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 41
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 41
+  '11':
+    RawName: "explosive"
+    Name: '&bExplosive'
+    Material: FIREBALL
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 42
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 42
+  '12':
+    RawName: "creditfinder"
+    Name: '&bCreditFinder'
+    Material: DIAMOND
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 43
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Min-Credits: 1
+    Max-Credits: 2
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 43
+  '13':
+    RawName: "secondhand"
+    Name: '&bSecondHand'
+    Material: NETHER_STAR
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 44
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Distance: 5
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 44
+  '14':
+    RawName: "gemfinder"
+    Name: '&bGemFinder'
+    Material: GOLD_INGOT
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 45
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Min-Gems: 1
+    Max-Gems: 2
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 45
+  '15':
+    RawName: "veinminer"
+    Name: '&bVeinMiner'
+    Material: RED_ROSE
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 45
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 45
+  '16':
+    RawName: "laser"
+    Name: '&bLaser'
+    Material: FIREWORK
+    Enabled: true
+    Chance: 0.1
+    InGuiSlot: 46
+    Increase-Cost-by: 200
+    Max: 500
+    Cost: 200
+    Description:
+      - '&7&o(( Ability to break full layer of your mine while mining))'
+    Refund:
+      Enabled: true
+      InGuiSlot: 46
 Pickaxe:
   lore:
-    - '&8&m------------------------'
-    - '&E&lBLOCKS MINED: &f%Blocks%/%Blocks_Required%'
-    - '&E&lPICKAXE LEVEL: &f%PickaxeLevel% &7[%PickaxeProgress%&7]'
-    - '&8&m------------------------'
-    - '%Enchant-1%'
-    - '%Enchant-2%'
-    - '%Enchant-3%'
-    - '%Enchant-4%'
-    - '%Enchant-5%'
-    - '%Enchant-6%'
-    - '%Enchant-7%'
-    - '%Enchant-8%'
-    - '%Enchant-9%'
-    - '%Enchant-10%'
-    - '%Enchant-11%'
-    - '%Enchant-12%'
-    - '%Enchant-13%'
-    - '%Enchant-14%'
-    - '%Enchant-15%'
-    - '%Enchant-16%'
-    - '%Enchant-17%'
-    - '%Enchant-18%'
-    - '%Enchant-19%'
-    - '%Enchant-20%'
-    - '%Enchant-21%'
+    - "&7Owner: &f%Owner%"
+    - " "
+    - "&b&lStatistics"
+    - " &b&l│ &7Level: &f%PickaxeLevel%"
+    - " &b&l│ &7Blocks: &f%Blocks%/%Blocks_Required%"
+    - " &b&l│ %PickaxeProgress%"
+    - " "
+    - "&e&lEnchants"
+    - ' &e&l│ %Enchant-1%'
+    - ' &e&l│ %Enchant-2%'
+    - ' &e&l│ %Enchant-3%'
+    - ' &e&l│ %Enchant-4%'
+    - ' &e&l│ %Enchant-5%'
+    - ' &e&l│ %Enchant-6%'
+    - ' &e&l│ %Enchant-7%'
+    - ' &e&l│ %Enchant-8%'
+    - ' &e&l│ %Enchant-9%'
+    - ' &e&l│ %Enchant-10%'
+    - ' &e&l│ %Enchant-11%'
+    - ' &e&l│ %Enchant-12%'
+    - ' &e&l│ %Enchant-13%'
+    - ' &e&l│ %Enchant-14%'
+    - ' &e&l│ %Enchant-15%'
+    - ' &e&l│ %Enchant-16%'
+    - ' &e&l│ %Enchant-17%'
+    - ' &e&l│ %Enchant-18%'
+    - ' &e&l│ %Enchant-19%'
+    - ' &e&l│ %Enchant-20%'
+    - ' &e&l│ %Enchant-21%'
+    - " "
+    - "&c&lBoosters"
+    - "  &c&l│ %Booster-1%"
 first-join-pickaxe:
   enabled: true
   name: "&e%player%'s Pickaxe"

@@ -160,6 +160,15 @@ public abstract class EvilEnchant implements Refundable {
         (new JumpBoostEnchant(Enchants.getInstance())).register();
         (new ShockwaveEnchant(Enchants.getInstance())).register();
         (new TokenMerchant(Enchants.getInstance())).register();
+        (new KeyFinderEnchant(Enchants.getInstance())).register();
+        (new NukeEnchant(Enchants.getInstance())).register();
+        (new LightningEnchant(Enchants.getInstance())).register();
+        (new ExplosiveEnchant(Enchants.getInstance())).register();
+        (new CreditFinder(Enchants.getInstance())).register();
+        (new SecondHand(Enchants.getInstance())).register();
+        (new GemFinder(Enchants.getInstance())).register();
+        (new VeinMiner(Enchants.getInstance())).register();
+        (new LaserEnchant(Enchants.getInstance())).register();
     }
 
     public static void reloadAll() {
