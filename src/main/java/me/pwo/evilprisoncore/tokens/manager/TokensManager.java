@@ -43,6 +43,7 @@ public class TokensManager {
                 .handler(e -> Schedulers.async().run(() -> {
                     this.tokens.getPlugin().getPluginDatabase().addIntoTokens(e.getPlayer());
                     this.tokensCache.put(e.getPlayer().getUniqueId(), this.tokens.getPlugin().getPluginDatabase().getPlayerTokens(e.getPlayer()));
+                    this.tokens.getPlugin().getLogger().info(String.format("Loaded tokens for %s.", e.getPlayer().getName()));
                 })).bindWith(tokens.getPlugin());
         Events.subscribe(PlayerQuitEvent.class)
                 .handler(e -> savePlayerData(e.getPlayer(), true, true)).bindWith(tokens.getPlugin());

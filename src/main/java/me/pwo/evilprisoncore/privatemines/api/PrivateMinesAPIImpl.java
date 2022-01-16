@@ -16,6 +16,6 @@ public class PrivateMinesAPIImpl implements PrivateMinesAPI {
 
     @Override
     public Mine getMineByLocation(Location location) {
-        return this.privateMines.getPrivateMinesManager().getAllMines().values().stream().filter(mine -> mine.getMineRegion().contains(WorldEditUtil.toWEVector(location))).collect(Collectors.toList()).get(0);
+        return this.privateMines.getPrivateMinesManager().getAllMines().values().stream().filter(mine -> mine.getMainRegion().contains(WorldEditUtil.toWEVector(location))).collect(Collectors.toList()).get(0);
     }
 }
