@@ -5,6 +5,8 @@ import me.lucko.helper.Events;
 import me.lucko.helper.terminable.TerminableConsumer;
 import me.pwo.evilprisoncore.EvilPrisonCore;
 import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.credits.api.CreditsAPI;
+import me.pwo.evilprisoncore.credits.api.CreditsAPIImpl;
 import me.pwo.evilprisoncore.credits.command.*;
 import me.pwo.evilprisoncore.credits.gui.CreditsGUI;
 import me.pwo.evilprisoncore.credits.manager.CreditsManager;
@@ -25,6 +27,7 @@ public class Credits implements EvilPrisonModules {
     private final EvilPrisonCore plugin;
     private CreditsManager creditsManager;
     private FileConfiguration creditsConfig;
+    private CreditsAPI creditsAPI;
     private Map<String, CreditsCommand> commands;
     private List<UUID> bypassGiftCardChat = new ArrayList<>();
     private boolean enabled;
@@ -45,6 +48,10 @@ public class Credits implements EvilPrisonModules {
         return creditsConfig;
     }
 
+    public CreditsAPI getApi() {
+        return creditsAPI;
+    }
+
     public Credits(EvilPrisonCore plugin) {
         this.plugin = plugin;
     }
@@ -54,6 +61,7 @@ public class Credits implements EvilPrisonModules {
         instance = this;
         this.creditsConfig = this.plugin.getFileUtils().getConfig("credits.yml").copyDefaults(true).save().get();
         this.creditsManager = new CreditsManager(this);
+        this.creditsAPI = new CreditsAPIImpl(this.creditsManager);
         registerEvents();
         registerCommands();
         this.enabled = true;
