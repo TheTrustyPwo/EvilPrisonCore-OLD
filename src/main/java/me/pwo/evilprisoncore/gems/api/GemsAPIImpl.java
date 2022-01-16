@@ -6,8 +6,8 @@ import org.bukkit.OfflinePlayer;
 public class GemsAPIImpl implements GemsAPI {
     private final GemsManager manager;
 
-    public GemsAPIImpl(GemsManager tokensManager) {
-        this.manager = tokensManager;
+    public GemsAPIImpl(GemsManager gemsManager) {
+        this.manager = gemsManager;
     }
 
     public long getPlayerGems(OfflinePlayer player) {

@@ -23,11 +23,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Gems implements EvilPrisonModules {
+    private static Gems instance;
     private final EvilPrisonCore plugin;
     private GemsManager gemsManager;
     private GemsAPI api;
     private Map<String, GemsCommand> commands;
     private boolean enabled;
+
+    public static Gems getInstance() {
+        return instance;
+    }
 
     public Gems(EvilPrisonCore evilPrisonCore) {
         this.plugin = evilPrisonCore;
@@ -52,6 +57,7 @@ public class Gems implements EvilPrisonModules {
     public void reload() {}
 
     public void enable() {
+        instance = this;
         this.gemsManager = new GemsManager(this);
         this.api = new GemsAPIImpl(this.gemsManager);
         registerEvents();
