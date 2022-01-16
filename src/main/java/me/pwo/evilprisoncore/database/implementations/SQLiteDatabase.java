@@ -54,8 +54,6 @@ public class SQLiteDatabase extends SQLDatabase {
         }
     }
 
-    public void runSQLUpdates() {}
-
     public void addIntoTokens(OfflinePlayer paramOfflinePlayer) {
         execute("INSERT OR IGNORE INTO EvilPrison_Tokens VALUES(?,?)", paramOfflinePlayer.getUniqueId().toString(), 0);
     }
