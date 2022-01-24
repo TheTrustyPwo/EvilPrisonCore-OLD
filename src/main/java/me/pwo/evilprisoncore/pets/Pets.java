@@ -3,7 +3,7 @@ package me.pwo.evilprisoncore.pets;
 import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.pets.command.PetsCommand;
 import me.pwo.evilprisoncore.pets.command.PetsGiveCommand;
 import me.pwo.evilprisoncore.pets.gui.PetsGUI;
@@ -16,7 +16,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.codemc.worldguardwrapper.WorldGuardWrapper;
@@ -25,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
-public class Pets implements EvilPrisonModules {
+public class Pets implements EvilPrisonModule {
     private static Pets instance;
     private final EvilPrisonCore plugin;
     private PetsManager petsManager;

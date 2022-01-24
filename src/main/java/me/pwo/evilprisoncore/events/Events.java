@@ -2,12 +2,12 @@ package me.pwo.evilprisoncore.events;
 
 import me.lucko.helper.Commands;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.events.events.RareBlock;
 import me.pwo.evilprisoncore.events.gui.EventsGUI;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class Events implements EvilPrisonModules {
+public class Events implements EvilPrisonModule {
     private final EvilPrisonCore plugin;
     private FileConfiguration eventsConfig;
     private RareBlock rareBlock;

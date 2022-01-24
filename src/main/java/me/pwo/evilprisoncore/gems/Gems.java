@@ -4,7 +4,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.gems.api.GemsAPI;
 import me.pwo.evilprisoncore.gems.api.GemsAPIImpl;
 import me.pwo.evilprisoncore.gems.command.*;
@@ -22,7 +22,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Gems implements EvilPrisonModules {
+public class Gems implements EvilPrisonModule {
     private static Gems instance;
     private final EvilPrisonCore plugin;
     private GemsManager gemsManager;

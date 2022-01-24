@@ -5,7 +5,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.enchants.Enchants;
 import me.pwo.evilprisoncore.pickaxe.pickaxerenametoken.api.PickaxeRenameTokenAPI;
 import me.pwo.evilprisoncore.pickaxe.pickaxerenametoken.api.PickaxeRenameTokenAPIImpl;
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
-public class PickaxeRenameToken implements EvilPrisonModules {
+public class PickaxeRenameToken implements EvilPrisonModule {
     private static final String RENAME_TOKEN_NBT_IDENTIFIER = "EvilPrison-Pickaxe-RenameToken";
     private static PickaxeRenameToken instance;
     private final EvilPrisonCore plugin;

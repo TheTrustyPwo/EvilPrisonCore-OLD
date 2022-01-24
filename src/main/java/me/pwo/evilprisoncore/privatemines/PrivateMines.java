@@ -2,7 +2,7 @@ package me.pwo.evilprisoncore.privatemines;
 
 import me.lucko.helper.Commands;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.privatemines.api.PrivateMinesAPI;
 import me.pwo.evilprisoncore.privatemines.api.PrivateMinesAPIImpl;
 import me.pwo.evilprisoncore.privatemines.command.*;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PrivateMines implements EvilPrisonModules {
+public class PrivateMines implements EvilPrisonModule {
     private static PrivateMines instance;
     private final EvilPrisonCore plugin;
     private PrivateMinesManager privateMinesManager;

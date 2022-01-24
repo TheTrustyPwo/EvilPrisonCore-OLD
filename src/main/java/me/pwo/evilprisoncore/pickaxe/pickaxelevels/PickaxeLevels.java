@@ -6,7 +6,7 @@ import me.lucko.helper.event.filter.EventFilters;
 import me.lucko.helper.item.ItemStackBuilder;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.pickaxe.pickaxelevels.api.PickaxeLevelsAPI;
 import me.pwo.evilprisoncore.pickaxe.pickaxelevels.api.PickaxeLevelsAPIImpl;
 import me.pwo.evilprisoncore.pickaxe.pickaxelevels.model.PickaxeLevel;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
-public class PickaxeLevels implements EvilPrisonModules {
+public class PickaxeLevels implements EvilPrisonModule {
     private static final String NBT_TAG_IDENTIFIER = "EvilPrison-PickaxeLevel";
     private final EvilPrisonCore plugin;
     private FileConfiguration config;

@@ -4,7 +4,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.menu.gui.PrisonMenuGUI;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.Material;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Menu implements EvilPrisonModules {
+public class Menu implements EvilPrisonModule {
     private static Menu instance;
     private EvilPrisonCore plugin;
     private Map<UUID, Boolean> menuToggled;

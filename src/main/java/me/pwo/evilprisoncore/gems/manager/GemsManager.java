@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class GemsManager {
     private static final String GEM_ITEM_NBT_TAG_IDENTIFIER = "EvilPrison-Gems-Item-Value";
     private final Gems gems;
-    private static final List<String> gemsTopFormat = Arrays.asList(
+    private static final List<String> GEMS_TOP_FORMAT = Arrays.asList(
             "&e&m-------&f&m-------&e&m--------&f&m--------&e&m--------&f&m-------&e&m-------",
             "&e&lGEMS TOP",
             "{FOR_EACH_PLAYER} &f&l#%position%. &e%player% &8&7%gems% Gems",
@@ -174,7 +174,7 @@ public class GemsManager {
             PlayerUtils.sendMessage(sender, "&c&lLeaderboard is currently updating...");
             return;
         }
-        for (String str : gemsTopFormat) {
+        for (String str : GEMS_TOP_FORMAT) {
             if (str.startsWith("{FOR_EACH_PLAYER}")) {
                 str = str.replace("{FOR_EACH_PLAYER} ", "");
                 for (byte position = 0; position < 10; position++) {

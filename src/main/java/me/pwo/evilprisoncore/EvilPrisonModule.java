@@ -1,6 +1,6 @@
 package me.pwo.evilprisoncore;
 
-public interface EvilPrisonModules {
+public interface EvilPrisonModule {
     void enable();
     void disable();
     void reload();

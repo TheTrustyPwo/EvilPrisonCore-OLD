@@ -1,13 +1,13 @@
 package me.pwo.evilprisoncore.pickaxe;
 
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.pickaxe.pickaxeboosters.PickaxeBoosters;
 import me.pwo.evilprisoncore.pickaxe.pickaxelevels.PickaxeLevels;
 import me.pwo.evilprisoncore.pickaxe.pickaxerenametoken.PickaxeRenameToken;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class Pickaxe implements EvilPrisonModules {
+public class Pickaxe implements EvilPrisonModule {
     private final EvilPrisonCore plugin;
     private PickaxeLevels pickaxeLevels;
     private PickaxeRenameToken pickaxeRenameToken;

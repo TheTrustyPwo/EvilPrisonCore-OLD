@@ -1,8 +1,8 @@
 package me.pwo.evilprisoncore.misc;
 
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 
-public class Misc implements EvilPrisonModules {
+public class Misc implements EvilPrisonModule {
     @Override
     public void enable() {
 

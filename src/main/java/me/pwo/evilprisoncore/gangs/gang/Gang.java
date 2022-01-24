@@ -1,6 +1,7 @@
 package me.pwo.evilprisoncore.gangs.gang;
 
 import me.lucko.helper.utils.Players;
+import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public class Gang {
         this.gangId = UUID.randomUUID();
         this.gangName = gangName;
         this.gangOwner = gangOwner;
-        this.gangMembers = new ArrayList<>();
+        this.gangMembers = new ArrayList<>(10);
         this.gangTrophies = 0L;
     }
 
@@ -71,6 +72,14 @@ public class Gang {
 
     public void setGangTrophies(long gangTrophies) {
         this.gangTrophies = gangTrophies;
+    }
+
+    public boolean isFull() {
+        return this.gangMembers.size() >= 10;
+    }
+
+    public void broadcastToMembers(String message) {
+        this.gangMembers.forEach(player -> PlayerUtils.sendMessage(Players.getNullable(player), message));
     }
 
     public boolean containsPlayer(@NotNull OfflinePlayer player) {

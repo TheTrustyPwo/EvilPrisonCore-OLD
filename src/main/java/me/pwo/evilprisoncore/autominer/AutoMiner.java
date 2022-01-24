@@ -6,7 +6,7 @@ import me.lucko.helper.Schedulers;
 import me.lucko.helper.text3.Text;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.autominer.api.AutoMinerAPI;
 import me.pwo.evilprisoncore.autominer.api.AutoMinerAPIImpl;
 import me.pwo.evilprisoncore.autominer.manager.AutoMinerManager;
@@ -25,7 +25,7 @@ import org.codemc.worldguardwrapper.region.IWrappedRegion;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class AutoMiner implements EvilPrisonModules {
+public class AutoMiner implements EvilPrisonModule {
 
     private final EvilPrisonCore plugin;
     private static AutoMiner instance;

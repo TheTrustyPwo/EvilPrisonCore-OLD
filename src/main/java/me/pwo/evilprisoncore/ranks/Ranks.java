@@ -4,7 +4,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.text3.Text;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.ranks.api.RanksAPI;
 import me.pwo.evilprisoncore.ranks.api.RanksAPIImpl;
 import me.pwo.evilprisoncore.ranks.manager.RankManager;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class Ranks implements EvilPrisonModules {
+public class Ranks implements EvilPrisonModule {
     private static Ranks instance;
     private final EvilPrisonCore plugin;
     private RankManager rankManager;

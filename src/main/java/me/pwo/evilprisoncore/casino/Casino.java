@@ -1,8 +1,8 @@
 package me.pwo.evilprisoncore.casino;
 
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 
-public class Casino implements EvilPrisonModules {
+public class Casino implements EvilPrisonModule {
 
     @Override
     public void enable() {

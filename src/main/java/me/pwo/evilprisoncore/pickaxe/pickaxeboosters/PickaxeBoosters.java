@@ -1,7 +1,7 @@
 package me.pwo.evilprisoncore.pickaxe.pickaxeboosters;
 
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.pickaxe.Pickaxe;
 import me.pwo.evilprisoncore.pickaxe.pickaxeboosters.model.Booster;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PickaxeBoosters implements EvilPrisonModules {
+public class PickaxeBoosters implements EvilPrisonModule {
     private static PickaxeBoosters instance;
     private final EvilPrisonCore plugin;
     private final Pickaxe pickaxe;

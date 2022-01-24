@@ -4,7 +4,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.tokens.api.TokensAPI;
 import me.pwo.evilprisoncore.tokens.api.TokensAPIImpl;
 import me.pwo.evilprisoncore.tokens.command.*;
@@ -22,7 +22,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Tokens implements EvilPrisonModules {
+public class Tokens implements EvilPrisonModule {
     private static Tokens instance;
     private final EvilPrisonCore plugin;
     private TokensManager tokensManager;

@@ -4,7 +4,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.blocks.api.BlocksAPI;
 import me.pwo.evilprisoncore.blocks.api.BlocksAPIImpl;
 import me.pwo.evilprisoncore.blocks.blockrewards.BlockRewards;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("deprecation")
-public class Blocks implements EvilPrisonModules {
+public class Blocks implements EvilPrisonModule {
     private static Blocks instance;
     private final EvilPrisonCore plugin;
     private BlocksManager blocksManager;

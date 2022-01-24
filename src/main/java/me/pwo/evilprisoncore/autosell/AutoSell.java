@@ -5,7 +5,7 @@ import me.lucko.helper.Events;
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.autosell.api.AutoSellAPI;
 import me.pwo.evilprisoncore.autosell.api.AutoSellAPIImpl;
 import me.pwo.evilprisoncore.multipliers.enums.MultiplierType;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
-public class AutoSell implements EvilPrisonModules {
+public class AutoSell implements EvilPrisonModule {
     private final EvilPrisonCore plugin;
     private FileConfiguration autosellConfig;
     private AutoSellAPI autoSellAPI;

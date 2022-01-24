@@ -2,15 +2,13 @@ package me.pwo.evilprisoncore.multipliers;
 
 import me.lucko.helper.Commands;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.multipliers.api.MultipliersAPI;
 import me.pwo.evilprisoncore.multipliers.api.MultipliersAPIImpl;
 import me.pwo.evilprisoncore.multipliers.command.MultipliersCommand;
 import me.pwo.evilprisoncore.multipliers.command.MultipliersGiveCommand;
 import me.pwo.evilprisoncore.multipliers.gui.MultipliersGUI;
 import me.pwo.evilprisoncore.multipliers.manager.MultipliersManager;
-import me.pwo.evilprisoncore.privatemines.command.PrivateMinesCommand;
-import me.pwo.evilprisoncore.privatemines.gui.MinesGUI;
 import me.pwo.evilprisoncore.utils.PlayerUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -19,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Multipliers implements EvilPrisonModules {
+public class Multipliers implements EvilPrisonModule {
     private static Multipliers instance;
     private final EvilPrisonCore plugin;
     private MultipliersManager multipliersManager;

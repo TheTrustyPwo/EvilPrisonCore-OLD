@@ -1,8 +1,7 @@
 package me.pwo.evilprisoncore.blocks.blockrewards;
 
-import jdk.nashorn.internal.ir.Block;
 import me.lucko.helper.Commands;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.blocks.Blocks;
 import me.pwo.evilprisoncore.blocks.blockrewards.gui.BlockRewardsGUI;
 import me.pwo.evilprisoncore.blocks.blockrewards.manager.BlockRewardsManager;
@@ -13,7 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class BlockRewards implements EvilPrisonModules {
+public class BlockRewards implements EvilPrisonModule {
     private static BlockRewards instance;
     private final Blocks blocks;
     private BlockRewardsManager blockRewardsManager;

@@ -5,7 +5,7 @@ import me.lucko.helper.Events;
 import me.lucko.helper.text3.Text;
 import me.lucko.helper.utils.Players;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.enchants.enchants.EvilEnchant;
 import me.pwo.evilprisoncore.enchants.gui.DisenchantGUI;
 import me.pwo.evilprisoncore.enchants.gui.EnchantGUI;
@@ -29,7 +29,7 @@ import org.codemc.worldguardwrapper.WorldGuardWrapper;
 import java.util.HashMap;
 
 @SuppressWarnings("deprecation")
-public class Enchants implements EvilPrisonModules {
+public class Enchants implements EvilPrisonModule {
     private static Enchants instance;
     private final EvilPrisonCore plugin;
     private EnchantsManager enchantsManager;

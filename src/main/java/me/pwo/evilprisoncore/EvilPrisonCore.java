@@ -37,7 +37,7 @@ import java.util.*;
 public final class EvilPrisonCore extends ExtendedJavaPlugin {
     public static boolean DEBUG = true;
     public static EvilPrisonCore instance;
-    private Map<String, EvilPrisonModules> loadedModules;
+    private Map<String, EvilPrisonModule> loadedModules;
     private Database pluginDatabase;
     private FileUtils fileUtils;
     private List<Material> pickaxesSupported;
@@ -59,7 +59,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
     private PrivateMines privateMines;
     private EvilPrisonGangs gangs;
 
-    public Map<String, EvilPrisonModules> getLoadedModules() {
+    public Map<String, EvilPrisonModule> getLoadedModules() {
         return this.loadedModules;
     }
 
@@ -209,19 +209,19 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         loadModule(this.gangs);
     }
 
-    public void loadModule(EvilPrisonModules module) {
+    public void loadModule(EvilPrisonModule module) {
         this.loadedModules.put(module.getName().toLowerCase(), module);
         module.enable();
         getLogger().info(Text.colorize(String.format("EvilPrisonCore - Module %s loaded.", module.getName())));
     }
 
-    public void unloadModule(EvilPrisonModules modules) {
+    public void unloadModule(EvilPrisonModule modules) {
         this.loadedModules.remove(modules.getName().toLowerCase());
         modules.disable();
         getLogger().info(Text.colorize(String.format("EvilPrisonCore - Module %s unloaded.", modules.getName())));
     }
 
-    public void reloadModule(EvilPrisonModules module) {
+    public void reloadModule(EvilPrisonModule module) {
         module.reload();
         getLogger().info(Text.colorize(String.format("EvilPrisonCore - Module %s reloaded.", module.getName())));
     }
@@ -242,7 +242,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
                         if (context.args().size() == 1) {
                             reload();
                         } else if (context.args().size() == 2) {
-                            EvilPrisonModules modules = getModuleByName(context.rawArg(1));
+                            EvilPrisonModule modules = getModuleByName(context.rawArg(1));
                             if (modules == null) {
                                 PlayerUtils.sendMessage(context.sender(), "&c&l(!) &cModule %module% is not loaded"
                                         .replaceAll("%module%", context.rawArg(1)), true);
@@ -277,7 +277,7 @@ public final class EvilPrisonCore extends ExtendedJavaPlugin {
         return (this.economy != null);
     }
 
-    public EvilPrisonModules getModuleByName(String paramString) {
+    public EvilPrisonModule getModuleByName(String paramString) {
         if (!isModuleEnabled(paramString))
             return null;
         return this.loadedModules.get(paramString.toLowerCase());

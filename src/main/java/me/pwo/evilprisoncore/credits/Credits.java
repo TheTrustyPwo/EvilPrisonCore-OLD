@@ -4,7 +4,7 @@ import me.lucko.helper.Commands;
 import me.lucko.helper.Events;
 import me.lucko.helper.terminable.TerminableConsumer;
 import me.pwo.evilprisoncore.EvilPrisonCore;
-import me.pwo.evilprisoncore.EvilPrisonModules;
+import me.pwo.evilprisoncore.EvilPrisonModule;
 import me.pwo.evilprisoncore.credits.api.CreditsAPI;
 import me.pwo.evilprisoncore.credits.api.CreditsAPIImpl;
 import me.pwo.evilprisoncore.credits.command.*;
@@ -22,7 +22,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class Credits implements EvilPrisonModules {
+public class Credits implements EvilPrisonModule {
     private static Credits instance;
     private final EvilPrisonCore plugin;
     private CreditsManager creditsManager;

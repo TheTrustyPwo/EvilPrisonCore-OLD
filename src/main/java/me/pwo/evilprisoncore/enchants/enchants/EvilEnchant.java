@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class EvilEnchant implements Refundable {
-    private static HashMap<Integer, EvilEnchant> allEnchantmentsById = new HashMap<>();
-    private static HashMap<String, EvilEnchant> allEnchantmentsByName = new HashMap<>();
+    private static final HashMap<Integer, EvilEnchant> allEnchantmentsById = new HashMap<>();
+    private static final HashMap<String, EvilEnchant> allEnchantmentsByName = new HashMap<>();
     protected final Enchants enchants;
     protected final int id;
     private String rawName;
